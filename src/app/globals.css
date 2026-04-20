@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-sans: "Inter", system-ui, sans-serif;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  /* Click-to-edit highlight — activated when in preview mode */
+  [data-hygraph-field]:hover {
+    @apply outline outline-2 outline-offset-2 outline-blue-400 cursor-pointer;
+  }
+
+  [data-hygraph-field]:hover::after {
+    content: attr(data-hygraph-field);
+    @apply absolute top-0 left-0 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-sm z-50 pointer-events-none;
+  }
+
+  .preview-banner {
+    @apply bg-amber-400 text-amber-900 text-sm font-medium px-4 py-2 text-center;
+  }
+
+  .stage-badge {
+    @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
+  }
+
+  .stage-badge--draft {
+    @apply bg-gray-100 text-gray-600;
+  }
+
+  .stage-badge--in-review {
+    @apply bg-amber-100 text-amber-700;
+  }
+
+  .stage-badge--approved {
+    @apply bg-blue-100 text-blue-700;
+  }
+
+  .stage-badge--published {
+    @apply bg-green-100 text-green-700;
+  }
+}

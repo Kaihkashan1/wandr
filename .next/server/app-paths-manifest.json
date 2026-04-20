@@ -1,0 +1,6 @@
+{
+  "/api/preferences/route": "app/api/preferences/route.js",
+  "/destinations/page": "app/destinations/page.js",
+  "/page": "app/page.js",
+  "/destinations/[slug]/page": "app/destinations/[slug]/page.js"
+}
