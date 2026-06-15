@@ -1,30 +1,49 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { LOCALES, LOCALE_LABELS } from "@/lib/locale";
+import { PREVIEW_QUERY_PARAM } from "@/lib/preview-utils";
 import { t } from "@/lib/i18n";
 import type { Locale } from "@/types";
 
 interface LocaleSwitcherProps {
   locale: Locale;
+  variant?: "nav" | "preview";
 }
 
-export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
+export function LocaleSwitcher({ locale, variant = "nav" }: LocaleSwitcherProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const isPreview = variant === "preview";
 
   async function switchLocale(next: Locale) {
     if (next === locale) return;
+
     await fetch("/api/preferences", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ locale: next }),
     });
+
+    if (isPreview) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(PREVIEW_QUERY_PARAM, "1");
+      params.set("locale", next);
+      router.push(`${pathname}?${params.toString()}`);
+      return;
+    }
+
     router.refresh();
   }
 
   return (
     <div
-      className="flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/15"
+      className={
+        isPreview
+          ? "flex items-center gap-1 p-1 rounded-full bg-gray-100 border border-gray-200 shadow-sm"
+          : "flex items-center gap-1 p-1 rounded-full bg-white/10 border border-white/15"
+      }
       role="group"
       aria-label={t(locale, "switchLanguage")}
     >
@@ -36,7 +55,9 @@ export function LocaleSwitcher({ locale }: LocaleSwitcherProps) {
           className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wide transition-colors ${
             l === locale
               ? "bg-wandr-500 text-white shadow-sm"
-              : "text-white/60 hover:text-white hover:bg-white/10"
+              : isPreview
+                ? "text-gray-500 hover:text-gray-900 hover:bg-gray-200"
+                : "text-white/60 hover:text-white hover:bg-white/10"
           }`}
           aria-current={l === locale ? "true" : undefined}
           title={LOCALE_LABELS[l]}

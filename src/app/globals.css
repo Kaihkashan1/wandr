@@ -91,11 +91,6 @@
     @apply absolute top-0 left-0 text-xs bg-wandr-500 text-white px-1.5 py-0.5 rounded-sm z-50 pointer-events-none;
   }
 
-  /* ── Preview mode banner ── */
-  .preview-banner {
-    @apply bg-amber-400 text-amber-900 text-sm font-medium px-4 py-2 text-center;
-  }
-
   /* ── Stage badges ── */
   .stage-badge {
     @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;

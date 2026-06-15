@@ -1,17 +1,18 @@
 import { notFound } from "next/navigation";
-import { cookies, draftMode } from "next/headers";
 import Image from "next/image";
 import { getGuideBySlug, getAllGuideSlugs } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
-import { formatDate, resolveLocale } from "@/lib/locale";
+import { formatDate } from "@/lib/locale";
+import { isPreviewEnabled } from "@/lib/preview";
+import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
-import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { EditableField } from "@/components/preview/EditableField";
 import { RichText } from "@/components/ui/RichText";
 import type { Metadata } from "next";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string; locale?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -19,28 +20,27 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
-  const guide = await getGuideBySlug(slug, locale);
+  const sp = await searchParams;
+  const locale = await resolveRequestLocale(sp);
+  const preview = await isPreviewEnabled(sp);
+  const guide = await getGuideBySlug(slug, locale, preview);
   if (!guide) return {};
   return { title: guide.title, description: guide.excerpt };
 }
 
-export default async function GuidePage({ params }: Props) {
+export default async function GuidePage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const { isEnabled: preview } = await draftMode();
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  const sp = await searchParams;
+  const preview = await isPreviewEnabled(sp);
+  const locale = await resolveRequestLocale(sp);
 
   const guide = await getGuideBySlug(slug, locale, preview);
   if (!guide) notFound();
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={guide.id} model="TravelGuide" locale={locale} />}
-
       <article className="max-w-3xl mx-auto px-6 py-14">
         <div className="flex flex-wrap items-center gap-2 mb-6">
           {guide.tags?.map((tag) => (

@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
-import { cookies, draftMode } from "next/headers";
 import Image from "next/image";
 import { getTourBySlug, getAllTourSlugs } from "@/lib/fetchers";
 import { difficultyLabel, t } from "@/lib/i18n";
-import { resolveLocale } from "@/lib/locale";
+import { isPreviewEnabled } from "@/lib/preview";
+import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
-import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { RichText } from "@/components/ui/RichText";
 import { TourPricingCard } from "@/components/ui/TourPricingCard";
 import type { Metadata } from "next";
@@ -13,18 +12,23 @@ import type { TourDifficulty } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string; locale?: string }>;
 }
+
+// Re-fetch PIM pricing/availability periodically (not baked in at build time forever).
+export const revalidate = 60;
 
 export async function generateStaticParams() {
   const slugs = await getAllTourSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
-  const tour = await getTourBySlug(slug, locale);
+  const sp = await searchParams;
+  const locale = await resolveRequestLocale(sp);
+  const preview = await isPreviewEnabled(sp);
+  const tour = await getTourBySlug(slug, locale, preview);
   if (!tour) return {};
   return { title: tour.title, description: tour.summary };
 }
@@ -36,19 +40,17 @@ const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
   expert: "difficulty-expert",
 };
 
-export default async function TourPage({ params }: Props) {
+export default async function TourPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const { isEnabled: preview } = await draftMode();
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  const sp = await searchParams;
+  const preview = await isPreviewEnabled(sp);
+  const locale = await resolveRequestLocale(sp);
 
   const tour = await getTourBySlug(slug, locale, preview);
   if (!tour) notFound();
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={tour.id} model="Tour" locale={locale} />}
-
       <section className="relative h-[55vh] min-h-[380px]">
         {tour.heroImage ? (
           <Image

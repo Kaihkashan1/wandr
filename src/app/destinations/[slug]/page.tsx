@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import { cookies, draftMode } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -8,17 +7,18 @@ import {
   getToursForDestination,
   getGuidesForDestination,
 } from "@/lib/fetchers";
-import { resolveLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
+import { isPreviewEnabled } from "@/lib/preview";
+import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
-import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { QuickFactsCard } from "@/components/ui/QuickFactsCard";
 import { RichText } from "@/components/ui/RichText";
 import type { Metadata } from "next";
 
 interface Props {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ preview?: string; locale?: string }>;
 }
 
 export async function generateStaticParams() {
@@ -26,11 +26,12 @@ export async function generateStaticParams() {
   return slugs.map((slug) => ({ slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
-  const destination = await getDestinationBySlug(slug, locale);
+  const sp = await searchParams;
+  const locale = await resolveRequestLocale(sp);
+  const preview = await isPreviewEnabled(sp);
+  const destination = await getDestinationBySlug(slug, locale, preview);
   if (!destination) return {};
   return {
     title: destination.name,
@@ -38,11 +39,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function DestinationPage({ params }: Props) {
+export default async function DestinationPage({ params, searchParams }: Props) {
   const { slug } = await params;
-  const { isEnabled: preview } = await draftMode();
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  const sp = await searchParams;
+  const preview = await isPreviewEnabled(sp);
+  const locale = await resolveRequestLocale(sp);
 
   const [destination, tours, guides] = await Promise.all([
     getDestinationBySlug(slug, locale, preview),
@@ -65,8 +66,6 @@ export default async function DestinationPage({ params }: Props) {
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={destination.id} model="Destination" locale={locale} />}
-
       {/* Hero */}
       <section className="relative h-[65vh] min-h-[440px]">
         {destination.heroImage ? (

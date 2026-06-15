@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { t } from "@/lib/i18n";
 import type { Locale } from "@/types";
@@ -51,7 +51,9 @@ export function Nav({ locale }: NavProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <LocaleSwitcher locale={locale} />
+          <Suspense fallback={null}>
+            <LocaleSwitcher locale={locale} />
+          </Suspense>
 
           <button
             type="button"

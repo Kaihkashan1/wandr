@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import "./globals.css";
 import { Nav } from "@/components/ui/Nav";
+import { PreviewLocaleBar } from "@/components/ui/PreviewLocaleBar";
 import { t } from "@/lib/i18n";
-import { resolveLocale } from "@/lib/locale";
+import { resolveRequestLocale } from "@/lib/request-locale";
+import { isPreviewEnabled } from "@/lib/preview";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,8 +15,7 @@ const inter = Inter({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  const locale = await resolveRequestLocale();
   return {
     title: {
       default: t(locale, "metaSiteTitle"),
@@ -36,13 +36,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  const locale = await resolveRequestLocale();
+  const preview = await isPreviewEnabled();
 
   return (
     <html lang={locale} className={inter.variable}>
       <body className="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
         <Nav locale={locale} />
+        {preview && <PreviewLocaleBar locale={locale} />}
         <main className="flex-1">{children}</main>
         <footer className="bg-navy-900 text-white/60 mt-auto border-t border-white/5">
           <div className="max-w-6xl mx-auto px-6 py-14">
