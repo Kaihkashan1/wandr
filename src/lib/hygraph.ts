@@ -1,13 +1,29 @@
 import { GraphQLClient } from "graphql-request";
 
-const HYGRAPH_TOKEN = process.env.HYGRAPH_TOKEN!;
+function readEndpointEnv(): string {
+  const endpoint =
+    process.env.HYGRAPH_ENDPOINT?.trim() ||
+    process.env.NEXT_PUBLIC_HYGRAPH_ENDPOINT?.trim() ||
+    "";
+
+  if (!endpoint) {
+    throw new Error(
+      "HYGRAPH_ENDPOINT is not set. Add your Hygraph Content API CDN URL in Vercel project settings."
+    );
+  }
+
+  return endpoint;
+}
 
 function assertHygraphUrl(name: string, url: string): string {
   const clean = url.replace(/\/$/, "");
   if (clean.includes("vercel.app") || clean.includes("vercel.com")) {
     throw new Error(
-      `${name} is set to a Vercel URL. It must be your Hygraph Content API endpoint.`
+      `${name} points to Vercel (${clean}). Set it to your Hygraph Content API URL, e.g. https://REGION.cdn.hygraph.com/content/PROJECT_ID/master`
     );
+  }
+  if (!clean.includes("hygraph.com")) {
+    throw new Error(`${name} is not a Hygraph URL (${clean}).`);
   }
   return clean;
 }
@@ -45,31 +61,40 @@ function resolveDraftEndpoint(endpoint: string): string {
     return `https://${region}.hygraph.com/v2/${projectId}/${environment}`;
   }
 
-  throw new Error("Could not derive HYGRAPH_DRAFT_ENDPOINT from HYGRAPH_ENDPOINT");
+  throw new Error("Could not derive draft endpoint from HYGRAPH_ENDPOINT");
 }
 
-const HYGRAPH_ENDPOINT = resolveCdnEndpoint(process.env.HYGRAPH_ENDPOINT ?? "");
-const HYGRAPH_DRAFT_ENDPOINT = resolveDraftEndpoint(process.env.HYGRAPH_ENDPOINT ?? "");
+function createClient(url: string): GraphQLClient {
+  const token = process.env.HYGRAPH_TOKEN;
+  if (!token) {
+    throw new Error("HYGRAPH_TOKEN is not set");
+  }
 
-if (!HYGRAPH_ENDPOINT) {
-  throw new Error("HYGRAPH_ENDPOINT is not set");
+  return new GraphQLClient(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 }
 
-// CDN client — serves published content, fast
-export const hygraphClient = new GraphQLClient(HYGRAPH_ENDPOINT, {
-  headers: {
-    Authorization: `Bearer ${HYGRAPH_TOKEN}`,
-  },
-});
-
-// Draft client — bypasses CDN, returns all stages
-export const hygraphDraftClient = new GraphQLClient(HYGRAPH_DRAFT_ENDPOINT, {
-  headers: {
-    Authorization: `Bearer ${HYGRAPH_TOKEN}`,
-  },
-});
-
-// Use this in pages/components — automatically selects CDN vs draft
+// Resolve at request time so runtime env on Vercel is used (not just build-time values).
 export function getClient(preview = false): GraphQLClient {
-  return preview ? hygraphDraftClient : hygraphClient;
+  const endpoint = readEndpointEnv();
+  const url = preview
+    ? resolveDraftEndpoint(endpoint)
+    : resolveCdnEndpoint(endpoint);
+  return createClient(url);
 }
+
+// Kept for any direct imports; always uses current env.
+export const hygraphClient = new Proxy({} as GraphQLClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getClient(false), prop, receiver);
+  },
+});
+
+export const hygraphDraftClient = new Proxy({} as GraphQLClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getClient(true), prop, receiver);
+  },
+});
