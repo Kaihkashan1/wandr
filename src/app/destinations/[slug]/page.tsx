@@ -8,7 +8,7 @@ import {
   getToursForDestination,
   getGuidesForDestination,
 } from "@/lib/fetchers";
-import { resolveLocale, LOCALE_LABELS } from "@/lib/locale";
+import { resolveLocale } from "@/lib/locale";
 import { t } from "@/lib/i18n";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
@@ -46,8 +46,12 @@ export default async function DestinationPage({ params }: Props) {
 
   const [destination, tours, guides] = await Promise.all([
     getDestinationBySlug(slug, locale, preview),
-    getToursForDestination(slug, locale, preview),
-    getGuidesForDestination(slug, locale, preview),
+    preview
+      ? Promise.resolve([])
+      : getToursForDestination(slug, locale, false),
+    preview
+      ? Promise.resolve([])
+      : getGuidesForDestination(slug, locale, false),
   ]);
 
   if (!destination) notFound();
@@ -144,46 +148,6 @@ export default async function DestinationPage({ params }: Props) {
               contentId={destination.id}
               preview={preview}
             />
-
-            {destination.localizations?.length > 1 && (
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="font-bold text-gray-900 mb-1 text-sm">{t(locale, "localizedContent")}</h3>
-                <p className="text-xs text-gray-400 mb-4">
-                  {t(locale, "availableInLanguages", {
-                    count: destination.localizations.length,
-                  })}
-                </p>
-                <div className="space-y-3">
-                  {destination.localizations.map((l) => (
-                    <div
-                      key={l.locale}
-                      className={`rounded-xl p-3 border text-sm ${
-                        l.locale === locale
-                          ? "border-wandr-500 bg-wandr-50"
-                          : "border-gray-100 bg-gray-50"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span
-                          className={`text-xs font-bold uppercase tracking-wide ${
-                            l.locale === locale ? "text-wandr-600" : "text-gray-400"
-                          }`}
-                        >
-                          {LOCALE_LABELS[l.locale as keyof typeof LOCALE_LABELS] ?? l.locale}
-                          {l.locale === locale && (
-                            <span className="ml-2 normal-case text-wandr-500">&bull; {t(locale, "current")}</span>
-                          )}
-                        </span>
-                      </div>
-                      <p className="font-semibold text-gray-900 leading-snug">{l.name}</p>
-                      {l.tagline && (
-                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{l.tagline}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </aside>
         </div>
 

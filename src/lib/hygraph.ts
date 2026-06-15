@@ -68,11 +68,22 @@ function resolveDraftEndpoint(endpoint: string): string {
   throw new Error("Could not derive draft endpoint from HYGRAPH_ENDPOINT");
 }
 
-function createClient(url: string): GraphQLClient {
-  const token = process.env.HYGRAPH_TOKEN;
+function readToken(preview: boolean): string {
+  if (preview) {
+    const previewToken = process.env.HYGRAPH_PREVIEW_TOKEN?.trim();
+    if (previewToken) return previewToken;
+  }
+
+  const token = process.env.HYGRAPH_TOKEN?.trim();
   if (!token) {
     throw new Error("HYGRAPH_TOKEN is not set");
   }
+
+  return token;
+}
+
+function createClient(url: string, preview = false): GraphQLClient {
+  const token = readToken(preview);
 
   return new GraphQLClient(url, {
     headers: {
@@ -87,7 +98,7 @@ export function getClient(preview = false): GraphQLClient {
   const url = preview
     ? resolveDraftEndpoint(endpoint)
     : resolveCdnEndpoint(endpoint);
-  return createClient(url);
+  return createClient(url, preview);
 }
 
 // Kept for any direct imports; always uses current env.
