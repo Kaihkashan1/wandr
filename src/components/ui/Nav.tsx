@@ -1,14 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { resolveLocale } from "@/lib/locale";
+import { PREVIEW_QUERY_PARAM } from "@/lib/preview-utils";
 import { t } from "@/lib/i18n";
 import type { Locale } from "@/types";
 
 interface NavProps {
   locale: Locale;
+}
+
+function NavLocaleSwitcher({ serverLocale }: { serverLocale: Locale }) {
+  const searchParams = useSearchParams();
+  const previewMode = searchParams.get(PREVIEW_QUERY_PARAM) === "1";
+  const locale = resolveLocale(searchParams.get("locale") ?? serverLocale);
+
+  return <LocaleSwitcher locale={locale} previewMode={previewMode} />;
 }
 
 export function Nav({ locale }: NavProps) {
@@ -52,7 +62,7 @@ export function Nav({ locale }: NavProps) {
 
         <div className="flex items-center gap-3">
           <Suspense fallback={null}>
-            <LocaleSwitcher locale={locale} />
+            <NavLocaleSwitcher serverLocale={locale} />
           </Suspense>
 
           <button
