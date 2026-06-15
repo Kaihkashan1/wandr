@@ -13,14 +13,17 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Wandr — Discover the world",
-    template: "%s | Wandr",
-  },
-  description:
-    "Discover handpicked destinations, tours, and travel guides from around the world.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  return {
+    title: {
+      default: t(locale, "metaSiteTitle"),
+      template: `%s | Wandr`,
+    },
+    description: t(locale, "metaSiteDescription"),
+  };
+}
 
 const footerLinkKeys = [
   { href: "/destinations", key: "navDestinations" as const },

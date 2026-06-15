@@ -105,6 +105,12 @@ export interface TourPricing {
   currency: string;
   discountedPrice?: number;
   pricePerPerson: boolean;
+  /** Original PIM currency before exchange-rate conversion */
+  sourceCurrency?: string;
+  sourceBasePrice?: number;
+  sourceDiscountedPrice?: number;
+  exchangeRate?: number;
+  ratesUpdatedAt?: string;
 }
 
 export interface TourAvailability {

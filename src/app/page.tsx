@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { getDestinations } from "@/lib/fetchers";
-import { t } from "@/lib/i18n";
+import { CATEGORY_KEYS, t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 
 export default async function HomePage() {
@@ -51,9 +51,9 @@ export default async function HomePage() {
 
       <section className="relative z-10 max-w-6xl mx-auto px-6 pt-4 pb-10">
         <div className="flex flex-wrap gap-3">
-          {["Adventure", "Cultural", "Beach & Island", "City Break", "Nature & Wildlife", "Gastronomy"].map((cat) => (
-            <span key={cat} className="category-pill">
-              {cat}
+          {CATEGORY_KEYS.map((key) => (
+            <span key={key} className="category-pill">
+              {t(locale, key)}
             </span>
           ))}
         </div>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { cookies, draftMode } from "next/headers";
 import Image from "next/image";
 import { getTourBySlug, getAllTourSlugs } from "@/lib/fetchers";
+import { difficultyLabel, t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { PreviewBanner } from "@/components/preview/PreviewBanner";
@@ -28,13 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: tour.title, description: tour.summary };
 }
 
-const DIFFICULTY_LABELS: Record<TourDifficulty, string> = {
-  easy: "Easy",
-  moderate: "Moderate",
-  challenging: "Challenging",
-  expert: "Expert",
-};
-
 const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
   easy: "difficulty-easy",
   moderate: "difficulty-moderate",
@@ -53,9 +47,8 @@ export default async function TourPage({ params }: Props) {
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={tour.id} model="Tour" />}
+      {preview && <PreviewBanner contentId={tour.id} model="Tour" locale={locale} />}
 
-      {/* Hero */}
       <section className="relative h-[55vh] min-h-[380px]">
         {tour.heroImage ? (
           <Image
@@ -74,10 +67,10 @@ export default async function TourPage({ params }: Props) {
           <div>
             <div className="flex items-center flex-wrap gap-2 mb-4">
               <span className={DIFFICULTY_CLASS[tour.difficulty]}>
-                {DIFFICULTY_LABELS[tour.difficulty]}
+                {difficultyLabel(locale, tour.difficulty)}
               </span>
               <span className="badge bg-white/20 text-white backdrop-blur-sm">
-                {tour.durationDays} days
+                {t(locale, "days", { count: tour.durationDays })}
               </span>
               {tour.destination && (
                 <span className="badge bg-white/20 text-white backdrop-blur-sm">
@@ -100,7 +93,7 @@ export default async function TourPage({ params }: Props) {
 
             {tour.highlights?.length > 0 && (
               <section>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-900">{t(locale, "highlights")}</h2>
                 <ul className="space-y-2.5">
                   {tour.highlights.map((h, i) => (
                     <li key={i} className="flex gap-3 text-gray-700">
@@ -113,7 +106,7 @@ export default async function TourPage({ params }: Props) {
             )}
 
             <section>
-              <h2 className="text-xl font-bold mb-4 text-gray-900">About this tour</h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-900">{t(locale, "aboutTour")}</h2>
               <div className="prose-wandr">
                 <RichText content={tour.description} />
               </div>
@@ -122,7 +115,7 @@ export default async function TourPage({ params }: Props) {
             <div className="grid grid-cols-2 gap-6">
               {tour.included?.length > 0 && (
                 <section className="bg-emerald-50 rounded-2xl p-5">
-                  <h3 className="font-bold mb-3 text-emerald-800">Included</h3>
+                  <h3 className="font-bold mb-3 text-emerald-800">{t(locale, "included")}</h3>
                   <ul className="space-y-2 text-sm text-emerald-900">
                     {tour.included.map((item, i) => (
                       <li key={i} className="flex gap-2">
@@ -135,7 +128,7 @@ export default async function TourPage({ params }: Props) {
               )}
               {tour.excluded?.length > 0 && (
                 <section className="bg-red-50 rounded-2xl p-5">
-                  <h3 className="font-bold mb-3 text-red-800">Not included</h3>
+                  <h3 className="font-bold mb-3 text-red-800">{t(locale, "notIncluded")}</h3>
                   <ul className="space-y-2 text-sm text-red-900">
                     {tour.excluded.map((item, i) => (
                       <li key={i} className="flex gap-2">
@@ -149,9 +142,12 @@ export default async function TourPage({ params }: Props) {
             </div>
           </div>
 
-          {/* Sidebar — federated pricing */}
           <aside>
-            <TourPricingCard tourId={tour.id} pricing={tour.pricing} availability={tour.availability} />
+            <TourPricingCard
+              locale={locale}
+              pricing={tour.pricing}
+              availability={tour.availability}
+            />
           </aside>
         </div>
       </div>

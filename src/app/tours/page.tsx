@@ -3,15 +3,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getTours } from "@/lib/fetchers";
-import { t } from "@/lib/i18n";
+import { difficultyLabel, t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 import type { TourDifficulty } from "@/types";
 
-export const metadata: Metadata = {
-  title: "Tours",
-  description: "Handpicked tours and experiences around the world.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  return {
+    title: t(locale, "metaToursTitle"),
+    description: t(locale, "metaToursDescription"),
+  };
+}
 
 const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
   easy: "difficulty-easy",
@@ -55,10 +59,10 @@ export default async function ToursPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                 <div className="absolute bottom-3 left-3 flex items-center gap-2">
                   <span className={DIFFICULTY_CLASS[tour.difficulty]}>
-                    {tour.difficulty.charAt(0).toUpperCase() + tour.difficulty.slice(1)}
+                    {difficultyLabel(locale, tour.difficulty)}
                   </span>
                   <span className="badge bg-black/40 text-white backdrop-blur-sm">
-                    {tour.durationDays} days
+                    {t(locale, "days", { count: tour.durationDays })}
                   </span>
                 </div>
               </div>

@@ -2,7 +2,8 @@ import { notFound } from "next/navigation";
 import { cookies, draftMode } from "next/headers";
 import Image from "next/image";
 import { getGuideBySlug, getAllGuideSlugs } from "@/lib/fetchers";
-import { resolveLocale } from "@/lib/locale";
+import { t } from "@/lib/i18n";
+import { formatDate, resolveLocale } from "@/lib/locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { EditableField } from "@/components/preview/EditableField";
@@ -38,10 +39,9 @@ export default async function GuidePage({ params }: Props) {
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={guide.id} model="TravelGuide" />}
+      {preview && <PreviewBanner contentId={guide.id} model="TravelGuide" locale={locale} />}
 
       <article className="max-w-3xl mx-auto px-6 py-14">
-        {/* Tags + stage */}
         <div className="flex flex-wrap items-center gap-2 mb-6">
           {guide.tags?.map((tag) => (
             <span
@@ -69,7 +69,6 @@ export default async function GuidePage({ params }: Props) {
           <p className="text-xl text-gray-500 mb-8 leading-relaxed">{guide.excerpt}</p>
         </EditableField>
 
-        {/* Author + date */}
         {guide.author && (
           <div className="flex items-center gap-4 mb-10 pb-8 border-b border-gray-200">
             {guide.author.avatar && (
@@ -84,7 +83,7 @@ export default async function GuidePage({ params }: Props) {
             <div>
               <p className="font-bold text-gray-900 text-sm">{guide.author.name}</p>
               <p className="text-xs text-gray-400 mt-0.5">
-                {new Date(guide.publishedAt).toLocaleDateString("en-GB", {
+                {formatDate(guide.publishedAt, locale, {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
@@ -94,7 +93,6 @@ export default async function GuidePage({ params }: Props) {
           </div>
         )}
 
-        {/* Cover image */}
         {guide.coverImage && (
           <div className="relative h-72 md:h-96 rounded-2xl overflow-hidden mb-10 shadow-md">
             <Image
@@ -106,7 +104,6 @@ export default async function GuidePage({ params }: Props) {
           </div>
         )}
 
-        {/* Body */}
         <EditableField fieldId={guide.id} fieldName="body" enabled={preview}>
           <div className="prose-wandr prose-lg">
             <RichText content={guide.body} />

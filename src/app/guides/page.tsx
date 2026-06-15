@@ -4,14 +4,18 @@ import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getGuides } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
-import { resolveLocale } from "@/lib/locale";
+import { formatDate, resolveLocale } from "@/lib/locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Travel guides",
-  description: "Expert travel guides from our team of writers.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  return {
+    title: t(locale, "metaGuidesTitle"),
+    description: t(locale, "metaGuidesDescription"),
+  };
+}
 
 export default async function GuidesPage() {
   const cookieStore = await cookies();
@@ -83,7 +87,7 @@ export default async function GuidesPage() {
                     <p className="text-xs font-semibold text-gray-700">{guide.author.name}</p>
                     {guide.publishedAt && (
                       <p className="text-xs text-gray-400">
-                        {new Date(guide.publishedAt).toLocaleDateString("en-GB", {
+                        {formatDate(guide.publishedAt, locale, {
                           day: "numeric",
                           month: "short",
                           year: "numeric",

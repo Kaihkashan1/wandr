@@ -7,10 +7,14 @@ import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Destinations",
-  description: "Explore handpicked destinations around the world.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const locale = resolveLocale(cookieStore.get("locale")?.value);
+  return {
+    title: t(locale, "metaDestinationsTitle"),
+    description: t(locale, "metaDestinationsDescription"),
+  };
+}
 
 export default async function DestinationsPage() {
   const cookieStore = await cookies();
@@ -44,7 +48,9 @@ export default async function DestinationsPage() {
             <div className="flex items-center gap-4 mb-6">
               <h2 className="section-label">{region}</h2>
               <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">{items.length} destinations</span>
+              <span className="text-xs text-gray-400">
+                {t(locale, "regionDestinationsCount", { count: items.length })}
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

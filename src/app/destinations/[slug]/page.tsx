@@ -61,7 +61,7 @@ export default async function DestinationPage({ params }: Props) {
 
   return (
     <div>
-      {preview && <PreviewBanner contentId={destination.id} model="Destination" />}
+      {preview && <PreviewBanner contentId={destination.id} model="Destination" locale={locale} />}
 
       {/* Hero */}
       <section className="relative h-[65vh] min-h-[440px]">
@@ -82,7 +82,7 @@ export default async function DestinationPage({ params }: Props) {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <span className="text-white/70 text-sm font-medium bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
-                {destination.region} &middot; {destination.country}
+                {quickFacts.region} &middot; {quickFacts.country}
               </span>
               {preview && <StageBadge stage={destination.stage} />}
             </div>

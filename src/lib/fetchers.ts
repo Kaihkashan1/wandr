@@ -10,6 +10,7 @@ import {
   GET_GUIDE_BY_SLUG,
   GET_ALL_GUIDE_SLUGS,
 } from "./queries";
+import { enrichTourWithFederation } from "./federation";
 import type {
   Destination,
   Tour,
@@ -100,7 +101,8 @@ export async function getTourBySlug(
     locale,
     stage: stage(preview),
   });
-  return data.tour;
+  if (!data.tour) return null;
+  return enrichTourWithFederation(data.tour, locale);
 }
 
 export async function getAllTourSlugs(): Promise<string[]> {
