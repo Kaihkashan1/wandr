@@ -49,8 +49,12 @@ function resolveCdnEndpoint(endpoint: string): string {
 function resolveDraftEndpoint(endpoint: string): string {
   const clean = assertHygraphUrl("HYGRAPH_ENDPOINT", endpoint);
 
-  if (clean.includes(".hygraph.com/v2/")) {
-    return clean;
+  const v2Match = clean.match(
+    /^https:\/\/(?:api-)?(.+)\.hygraph\.com\/v2\/([^/]+)\/([^/]+)$/
+  );
+  if (v2Match) {
+    const [, region, projectId, environment] = v2Match;
+    return `https://api-${region}.hygraph.com/v2/${projectId}/${environment}`;
   }
 
   const cdnMatch = clean.match(
@@ -58,7 +62,7 @@ function resolveDraftEndpoint(endpoint: string): string {
   );
   if (cdnMatch) {
     const [, region, projectId, environment] = cdnMatch;
-    return `https://${region}.hygraph.com/v2/${projectId}/${environment}`;
+    return `https://api-${region}.hygraph.com/v2/${projectId}/${environment}`;
   }
 
   throw new Error("Could not derive draft endpoint from HYGRAPH_ENDPOINT");
