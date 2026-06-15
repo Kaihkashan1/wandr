@@ -58,6 +58,12 @@ export const GET_DESTINATION_BY_SLUG = gql`
       country
       climate
       bestTimeToVisit
+      quickFacts {
+        region
+        country
+        climate
+        bestTimeToVisit
+      }
       stage
       heroImage {
         ...AssetFields

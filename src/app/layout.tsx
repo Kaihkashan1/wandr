@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import "./globals.css";
 import { Nav } from "@/components/ui/Nav";
+import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 
 const inter = Inter({
@@ -21,10 +22,10 @@ export const metadata: Metadata = {
     "Discover handpicked destinations, tours, and travel guides from around the world.",
 };
 
-const footerLinks = [
-  { href: "/destinations", label: "Destinations" },
-  { href: "/tours", label: "Tours" },
-  { href: "/guides", label: "Travel Guides" },
+const footerLinkKeys = [
+  { href: "/destinations", key: "navDestinations" as const },
+  { href: "/tours", key: "navTours" as const },
+  { href: "/guides", key: "navGuides" as const },
 ];
 
 export default async function RootLayout({
@@ -48,24 +49,24 @@ export default async function RootLayout({
                   wandr
                 </Link>
                 <p className="text-sm leading-relaxed max-w-xs text-white/50">
-                  Handpicked destinations, immersive tours, and expert travel guides for curious explorers.
+                  {t(locale, "footerTagline")}
                 </p>
               </div>
               <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-                {footerLinks.map((link) => (
+                {footerLinkKeys.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     className="text-white/60 hover:text-wandr-400 transition-colors"
                   >
-                    {link.label}
+                    {t(locale, link.key)}
                   </Link>
                 ))}
               </nav>
             </div>
             <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
-              <p>&copy; {new Date().getFullYear()} Wandr. All rights reserved.</p>
-              <p>Discover the world, one adventure at a time.</p>
+              <p>&copy; {new Date().getFullYear()} Wandr. {t(locale, "footerRights")}</p>
+              <p>{t(locale, "footerMotto")}</p>
             </div>
           </div>
         </footer>

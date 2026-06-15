@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LOCALES, LOCALE_LABELS } from "@/lib/locale";
+import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
+import { t } from "@/lib/i18n";
 import type { Locale } from "@/types";
 
 interface NavProps {
@@ -11,23 +12,13 @@ interface NavProps {
 }
 
 export function Nav({ locale }: NavProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  async function setPreference(key: "locale", value: string) {
-    await fetch("/api/preferences", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ [key]: value }),
-    });
-    router.refresh();
-  }
-
   const navLinks = [
-    { href: "/destinations", label: "Destinations" },
-    { href: "/tours", label: "Tours & Experiences" },
-    { href: "/guides", label: "Travel Guides" },
+    { href: "/destinations", label: t(locale, "navDestinations") },
+    { href: "/tours", label: t(locale, "navTours") },
+    { href: "/guides", label: t(locale, "navGuides") },
   ];
 
   return (
@@ -60,24 +51,13 @@ export function Nav({ locale }: NavProps) {
         </nav>
 
         <div className="flex items-center gap-3">
-          <select
-            value={locale}
-            onChange={(e) => setPreference("locale", e.target.value)}
-            className="text-xs border border-white/20 rounded-full px-3 py-1.5 bg-white/10 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-wandr-500 cursor-pointer"
-            aria-label="Switch language"
-          >
-            {LOCALES.map((l) => (
-              <option key={l} value={l} className="bg-navy-900 text-white">
-                {LOCALE_LABELS[l]}
-              </option>
-            ))}
-          </select>
+          <LocaleSwitcher locale={locale} />
 
           <button
             type="button"
             className="md:hidden p-2 rounded-lg text-white/80 hover:bg-white/10 transition-colors"
             onClick={() => setMobileOpen((o) => !o)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            aria-label={mobileOpen ? t(locale, "closeMenu") : t(locale, "openMenu")}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? (

@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getDestinations } from "@/lib/fetchers";
+import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 
@@ -29,9 +30,12 @@ export default async function DestinationsPage() {
   return (
     <div>
       <PageHeader
-        label="Explore the world"
-        title="Destinations"
-        description={`${destinations.length} destinations across ${Object.keys(byRegion).length} regions`}
+        label={t(locale, "destinationsPageLabel")}
+        title={t(locale, "destinationsPageTitle")}
+        description={t(locale, "destinationsPageDesc", {
+          count: destinations.length,
+          regions: Object.keys(byRegion).length,
+        })}
       />
 
       <div className="max-w-6xl mx-auto px-6 py-12">

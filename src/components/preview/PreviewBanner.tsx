@@ -1,18 +1,19 @@
 import Link from "next/link";
+import { t } from "@/lib/i18n";
+import type { Locale } from "@/types";
 
 interface PreviewBannerProps {
   contentId: string;
   model: string;
+  locale: Locale;
 }
 
-export function PreviewBanner({ contentId, model }: PreviewBannerProps) {
+export function PreviewBanner({ contentId, model, locale }: PreviewBannerProps) {
   const hygraphAppUrl = `https://app.hygraph.com`;
 
   return (
     <div className="preview-banner flex items-center justify-between px-6">
-      <span>
-        Preview mode active — you are viewing unpublished content ({model})
-      </span>
+      <span>{t(locale, "previewActive", { model })}</span>
       <div className="flex items-center gap-4 text-xs">
         <a
           href={`${hygraphAppUrl}/content/${contentId}`}
@@ -20,13 +21,13 @@ export function PreviewBanner({ contentId, model }: PreviewBannerProps) {
           rel="noopener noreferrer"
           className="underline hover:no-underline"
         >
-          Open in Hygraph
+          {t(locale, "openInHygraph")}
         </a>
         <Link
           href={`/api/preview/disable?returnTo=${encodeURIComponent(typeof window !== "undefined" ? window.location.pathname : "/")}`}
           className="underline hover:no-underline"
         >
-          Exit preview
+          {t(locale, "exitPreview")}
         </Link>
       </div>
     </div>

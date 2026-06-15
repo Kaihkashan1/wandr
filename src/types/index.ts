@@ -15,6 +15,13 @@ export interface RichTextContent {
   html?: string;
 }
 
+export interface QuickFacts {
+  region?: string;
+  country?: string;
+  climate?: string;
+  bestTimeToVisit?: string;
+}
+
 // ─── Destination ──────────────────────────────────────────────────────────────
 
 export interface Destination {
@@ -29,6 +36,7 @@ export interface Destination {
   gallery: Asset[];
   climate: string;
   bestTimeToVisit: string;
+  quickFacts?: QuickFacts;
   stage: ContentStage;
   localizations: Array<{
     locale: Locale;

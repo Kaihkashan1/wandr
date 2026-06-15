@@ -9,9 +9,11 @@ import {
   getGuidesForDestination,
 } from "@/lib/fetchers";
 import { resolveLocale, LOCALE_LABELS } from "@/lib/locale";
+import { t } from "@/lib/i18n";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
 import { PreviewBanner } from "@/components/preview/PreviewBanner";
+import { QuickFactsCard } from "@/components/ui/QuickFactsCard";
 import { RichText } from "@/components/ui/RichText";
 import type { Metadata } from "next";
 
@@ -49,6 +51,13 @@ export default async function DestinationPage({ params }: Props) {
   ]);
 
   if (!destination) notFound();
+
+  const quickFacts = destination.quickFacts ?? {
+    region: destination.region,
+    country: destination.country,
+    climate: destination.climate,
+    bestTimeToVisit: destination.bestTimeToVisit,
+  };
 
   return (
     <div>
@@ -105,7 +114,7 @@ export default async function DestinationPage({ params }: Props) {
 
             {destination.gallery?.length > 0 && (
               <section>
-                <h2 className="section-heading mb-6">Photo gallery</h2>
+                <h2 className="section-heading mb-6">{t(locale, "photoGallery")}</h2>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {destination.gallery.map((image, idx) => (
                     <div
@@ -129,37 +138,20 @@ export default async function DestinationPage({ params }: Props) {
 
           {/* Sidebar */}
           <aside className="space-y-5">
-            <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4 sticky top-20">
-              <h3 className="font-bold text-gray-900">Quick facts</h3>
-              <dl className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Region</dt>
-                  <dd className="font-semibold text-right">{destination.region}</dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-500">Country</dt>
-                  <dd className="font-semibold text-right">{destination.country}</dd>
-                </div>
-                {destination.climate && (
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-gray-500 shrink-0">Climate</dt>
-                    <dd className="font-semibold text-right">{destination.climate}</dd>
-                  </div>
-                )}
-                {destination.bestTimeToVisit && (
-                  <div className="pt-3 border-t border-gray-100">
-                    <dt className="text-gray-500 mb-1">Best time to visit</dt>
-                    <dd className="font-semibold text-wandr-600">{destination.bestTimeToVisit}</dd>
-                  </div>
-                )}
-              </dl>
-            </div>
+            <QuickFactsCard
+              facts={quickFacts}
+              locale={locale}
+              contentId={destination.id}
+              preview={preview}
+            />
 
             {destination.localizations?.length > 1 && (
               <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-                <h3 className="font-bold text-gray-900 mb-1 text-sm">Localized content</h3>
+                <h3 className="font-bold text-gray-900 mb-1 text-sm">{t(locale, "localizedContent")}</h3>
                 <p className="text-xs text-gray-400 mb-4">
-                  This destination is available in {destination.localizations.length} languages
+                  {t(locale, "availableInLanguages", {
+                    count: destination.localizations.length,
+                  })}
                 </p>
                 <div className="space-y-3">
                   {destination.localizations.map((l) => (
@@ -179,7 +171,7 @@ export default async function DestinationPage({ params }: Props) {
                         >
                           {LOCALE_LABELS[l.locale as keyof typeof LOCALE_LABELS] ?? l.locale}
                           {l.locale === locale && (
-                            <span className="ml-2 normal-case text-wandr-500">&bull; current</span>
+                            <span className="ml-2 normal-case text-wandr-500">&bull; {t(locale, "current")}</span>
                           )}
                         </span>
                       </div>
@@ -200,14 +192,14 @@ export default async function DestinationPage({ params }: Props) {
           <section className="mt-20 pt-14 border-t border-gray-200">
             <div className="flex items-baseline justify-between mb-8">
               <div>
-                <p className="section-label mb-2">Experiences</p>
-                <h2 className="section-heading">Tours in {destination.name}</h2>
+                <p className="section-label mb-2">{t(locale, "experiences")}</p>
+                <h2 className="section-heading">{t(locale, "toursIn", { name: destination.name })}</h2>
               </div>
               <Link
                 href="/tours"
                 className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors"
               >
-                All tours &rarr;
+                {t(locale, "allTours")} &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,7 +222,7 @@ export default async function DestinationPage({ params }: Props) {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                     <span className="absolute bottom-3 left-3 badge bg-black/40 text-white backdrop-blur-sm">
-                      {tour.durationDays} days
+                      {t(locale, "days", { count: tour.durationDays })}
                     </span>
                   </div>
                   <div className="p-5">
@@ -252,14 +244,14 @@ export default async function DestinationPage({ params }: Props) {
           <section className="mt-16">
             <div className="flex items-baseline justify-between mb-8">
               <div>
-                <p className="section-label mb-2">Travel guides</p>
-                <h2 className="section-heading">Plan your trip</h2>
+                <p className="section-label mb-2">{t(locale, "travelGuides")}</p>
+                <h2 className="section-heading">{t(locale, "planYourTrip")}</h2>
               </div>
               <Link
                 href="/guides"
                 className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors"
               >
-                All guides &rarr;
+                {t(locale, "allGuides")} &rarr;
               </Link>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -291,7 +283,7 @@ export default async function DestinationPage({ params }: Props) {
                     </p>
                     {guide.author && (
                       <p className="text-xs text-gray-400 mt-4 pt-4 border-t border-gray-100">
-                        By {guide.author.name}
+                        {t(locale, "byAuthor", { name: guide.author.name })}
                       </p>
                     )}
                   </div>

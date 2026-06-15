@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getTours } from "@/lib/fetchers";
+import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 import type { TourDifficulty } from "@/types";
@@ -27,9 +28,9 @@ export default async function ToursPage() {
   return (
     <div>
       <PageHeader
-        label="Experiences"
-        title="Tours & experiences"
-        description={`${tours.length} tours with live pricing and availability`}
+        label={t(locale, "toursPageLabel")}
+        title={t(locale, "toursPageTitle")}
+        description={t(locale, "toursPageDesc", { count: tours.length })}
       />
 
       <div className="max-w-6xl mx-auto px-6 py-12">
@@ -72,9 +73,9 @@ export default async function ToursPage() {
                   {tour.summary}
                 </p>
                 <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-xs text-gray-400">Live pricing available</span>
+                  <span className="text-xs text-gray-400">{t(locale, "livePricing")}</span>
                   <span className="text-wandr-600 text-sm font-semibold group-hover:underline">
-                    View details &rarr;
+                    {t(locale, "viewDetails")} &rarr;
                   </span>
                 </div>
               </div>

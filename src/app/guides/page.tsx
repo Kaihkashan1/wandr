@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getGuides } from "@/lib/fetchers";
+import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import type { Metadata } from "next";
@@ -20,9 +21,9 @@ export default async function GuidesPage() {
   return (
     <div>
       <PageHeader
-        label="Inspiration & advice"
-        title="Travel guides"
-        description="Expert advice, local tips, and insider knowledge"
+        label={t(locale, "guidesPageLabel")}
+        title={t(locale, "guidesPageTitle")}
+        description={t(locale, "guidesPageDesc")}
       />
 
       <div className="max-w-6xl mx-auto px-6 py-12">
