@@ -82,13 +82,15 @@ export default async function GuidePage({ params }: Props) {
             )}
             <div>
               <p className="font-bold text-gray-900 text-sm">{guide.author.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">
-                {formatDate(guide.publishedAt, locale, {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </p>
+              {guide.publishedAt && (
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {formatDate(guide.publishedAt, locale, {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+              )}
             </div>
           </div>
         )}
