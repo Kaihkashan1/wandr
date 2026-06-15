@@ -8,8 +8,9 @@ export async function GET(request: NextRequest) {
   const slug = searchParams.get("slug");
   const model = searchParams.get("model") ?? "destination";
 
-  // Validate secret
-  if (secret !== process.env.PREVIEW_SECRET) {
+  // Optional: validate secret when PREVIEW_SECRET is configured
+  const previewSecret = process.env.PREVIEW_SECRET;
+  if (previewSecret && secret !== previewSecret) {
     return new Response("Invalid token", { status: 401 });
   }
 

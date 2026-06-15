@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { getDestinations } from "@/lib/fetchers";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
@@ -15,7 +16,6 @@ export default async function DestinationsPage() {
   const locale = resolveLocale(cookieStore.get("locale")?.value);
   const destinations = await getDestinations(locale);
 
-  // Group by region
   const byRegion = destinations.reduce<Record<string, typeof destinations>>(
     (acc, d) => {
       const key = d.region ?? "Other";
@@ -27,53 +27,61 @@ export default async function DestinationsPage() {
   );
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-2">Destinations</h1>
-      <p className="text-gray-500 mb-10">
-        {destinations.length} destinations across{" "}
-        {Object.keys(byRegion).length} regions.
-      </p>
+    <div>
+      <PageHeader
+        label="Explore the world"
+        title="Destinations"
+        description={`${destinations.length} destinations across ${Object.keys(byRegion).length} regions`}
+      />
 
-      {Object.entries(byRegion).map(([region, items]) => (
-        <section key={region} className="mb-14">
-          <h2 className="text-sm font-semibold uppercase tracking-widest text-gray-400 mb-6">
-            {region}
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((destination) => (
-              <Link
-                key={destination.id}
-                href={`/destinations/${destination.slug}`}
-                className="group block rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow"
-              >
-                <div className="relative h-52">
-                  {destination.heroImage ? (
-                    <Image
-                      src={destination.heroImage.url}
-                      alt={destination.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gray-200" />
-                  )}
-                </div>
-                <div className="p-4">
-                  <p className="text-xs text-gray-400 mb-1">
-                    {destination.country}
-                  </p>
-                  <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {destination.name}
-                  </h3>
-                  <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                    {destination.tagline}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      ))}
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {Object.entries(byRegion).map(([region, items]) => (
+          <section key={region} className="mb-16">
+            <div className="flex items-center gap-4 mb-6">
+              <h2 className="section-label">{region}</h2>
+              <div className="flex-1 h-px bg-gray-200" />
+              <span className="text-xs text-gray-400">{items.length} destinations</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {items.map((destination) => (
+                <Link
+                  key={destination.id}
+                  href={`/destinations/${destination.slug}`}
+                  className="card group block"
+                >
+                  <div className="relative h-52 overflow-hidden">
+                    {destination.heroImage ? (
+                      <Image
+                        src={destination.heroImage.url}
+                        alt={destination.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-navy-500 to-navy-900" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                    <div className="absolute bottom-3 left-3">
+                      <span className="text-white/80 text-xs font-medium bg-black/30 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                        {destination.country}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-bold text-gray-900 group-hover:text-wandr-600 transition-colors">
+                      {destination.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1 line-clamp-2 leading-snug">
+                      {destination.tagline}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

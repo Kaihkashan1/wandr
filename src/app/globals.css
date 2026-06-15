@@ -13,24 +13,90 @@
 
   body {
     font-family: var(--font-sans);
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+
+  ::selection {
+    @apply bg-wandr-200 text-wandr-900;
   }
 }
 
 @layer components {
-  /* Click-to-edit highlight — activated when in preview mode */
+  /* ── Page headers ── */
+  .page-header {
+    @apply relative bg-navy-900 py-16 overflow-hidden;
+  }
+
+  .page-header-glow {
+    @apply absolute inset-0 pointer-events-none;
+    background:
+      radial-gradient(ellipse 70% 60% at 10% 0%, rgba(248, 104, 0, 0.18), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 90% 100%, rgba(255, 140, 66, 0.1), transparent 50%);
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-wandr-500 text-white font-semibold px-6 py-3 rounded-full hover:bg-wandr-600 active:bg-wandr-700 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 bg-white/95 text-gray-900 font-semibold px-6 py-3 rounded-full border border-white/30 hover:bg-white active:bg-gray-50 transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 backdrop-blur-sm;
+  }
+
+  /* ── Cards ── */
+  .card {
+    @apply bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100/80 hover:shadow-lg hover:border-gray-200/80 transition-all duration-300 hover:-translate-y-1;
+  }
+
+  /* ── Section headings ── */
+  .section-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-gray-400;
+  }
+
+  .section-heading {
+    @apply text-2xl md:text-3xl font-bold text-gray-900 tracking-tight;
+  }
+
+  /* ── Badges ── */
+  .badge {
+    @apply inline-flex items-center text-xs font-medium px-2.5 py-1 rounded-full;
+  }
+
+  .locale-badge {
+    @apply badge bg-navy-50 text-navy-500 border border-navy-100;
+  }
+
+  /* ── Feature cards (Why Wandr, etc.) ── */
+  .feature-card {
+    @apply rounded-2xl bg-white/5 border border-white/10 p-8 text-center backdrop-blur-sm hover:bg-white/10 transition-colors;
+  }
+
+  /* ── Category pill ── */
+  .category-pill {
+    @apply bg-white text-gray-700 text-sm font-medium px-4 py-2 rounded-full shadow-sm border border-gray-200 cursor-pointer hover:border-wandr-400 hover:text-wandr-600 hover:shadow-md transition-all hover:-translate-y-0.5;
+  }
+
+  /* ── Prose overrides ── */
+  .prose-wandr {
+    @apply prose prose-gray max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-wandr-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl;
+  }
+
+  /* ── Click-to-edit highlight (preview mode) ── */
   [data-hygraph-field]:hover {
-    @apply outline outline-2 outline-offset-2 outline-blue-400 cursor-pointer;
+    @apply outline outline-2 outline-offset-2 outline-wandr-400 cursor-pointer;
   }
 
   [data-hygraph-field]:hover::after {
     content: attr(data-hygraph-field);
-    @apply absolute top-0 left-0 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-sm z-50 pointer-events-none;
+    @apply absolute top-0 left-0 text-xs bg-wandr-500 text-white px-1.5 py-0.5 rounded-sm z-50 pointer-events-none;
   }
 
+  /* ── Preview mode banner ── */
   .preview-banner {
     @apply bg-amber-400 text-amber-900 text-sm font-medium px-4 py-2 text-center;
   }
 
+  /* ── Stage badges ── */
   .stage-badge {
     @apply inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full;
   }
@@ -50,4 +116,10 @@
   .stage-badge--published {
     @apply bg-green-100 text-green-700;
   }
+
+  /* ── Difficulty badges ── */
+  .difficulty-easy    { @apply badge bg-emerald-50 text-emerald-700; }
+  .difficulty-moderate { @apply badge bg-sky-50 text-sky-700; }
+  .difficulty-challenging { @apply badge bg-amber-50 text-amber-700; }
+  .difficulty-expert  { @apply badge bg-red-50 text-red-700; }
 }

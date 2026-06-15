@@ -8,6 +8,7 @@ import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { RichText } from "@/components/ui/RichText";
 import { TourPricingCard } from "@/components/ui/TourPricingCard";
 import type { Metadata } from "next";
+import type { TourDifficulty } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -27,18 +28,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: tour.title, description: tour.summary };
 }
 
-const DIFFICULTY_LABELS = {
+const DIFFICULTY_LABELS: Record<TourDifficulty, string> = {
   easy: "Easy",
   moderate: "Moderate",
   challenging: "Challenging",
   expert: "Expert",
 };
 
-const DIFFICULTY_COLORS = {
-  easy: "bg-green-100 text-green-700",
-  moderate: "bg-blue-100 text-blue-700",
-  challenging: "bg-amber-100 text-amber-700",
-  expert: "bg-red-100 text-red-700",
+const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
+  easy: "difficulty-easy",
+  moderate: "difficulty-moderate",
+  challenging: "difficulty-challenging",
+  expert: "difficulty-expert",
 };
 
 export default async function TourPage({ params }: Props) {
@@ -55,7 +56,7 @@ export default async function TourPage({ params }: Props) {
       {preview && <PreviewBanner contentId={tour.id} model="Tour" />}
 
       {/* Hero */}
-      <section className="relative h-[50vh] min-h-[360px]">
+      <section className="relative h-[55vh] min-h-[380px]">
         {tour.heroImage ? (
           <Image
             src={tour.heroImage.url}
@@ -65,39 +66,45 @@ export default async function TourPage({ params }: Props) {
             priority
           />
         ) : (
-          <div className="absolute inset-0 bg-gray-300" />
+          <div className="absolute inset-0 bg-gradient-to-br from-navy-500 to-navy-900" />
         )}
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="relative z-10 h-full flex items-end max-w-5xl mx-auto px-6 pb-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+        <div className="relative z-10 h-full flex items-end max-w-6xl mx-auto px-6 pb-12">
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <span
-                className={`text-xs font-medium px-2 py-1 rounded-full ${DIFFICULTY_COLORS[tour.difficulty]}`}
-              >
+            <div className="flex items-center flex-wrap gap-2 mb-4">
+              <span className={DIFFICULTY_CLASS[tour.difficulty]}>
                 {DIFFICULTY_LABELS[tour.difficulty]}
               </span>
-              <span className="text-white/80 text-sm">
+              <span className="badge bg-white/20 text-white backdrop-blur-sm">
                 {tour.durationDays} days
               </span>
+              {tour.destination && (
+                <span className="badge bg-white/20 text-white backdrop-blur-sm">
+                  {tour.destination.name}
+                </span>
+              )}
               {preview && <StageBadge stage={tour.stage} />}
             </div>
-            <h1 className="text-4xl font-bold text-white">{tour.title}</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-white leading-tight max-w-2xl">
+              {tour.title}
+            </h1>
           </div>
         </div>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-6xl mx-auto px-6 py-14">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-10">
-            <p className="text-lg text-gray-600">{tour.summary}</p>
+            <p className="text-lg text-gray-600 leading-relaxed">{tour.summary}</p>
 
             {tour.highlights?.length > 0 && (
               <section>
-                <h2 className="text-xl font-bold mb-4">Highlights</h2>
-                <ul className="space-y-2">
+                <h2 className="text-xl font-bold mb-4 text-gray-900">Highlights</h2>
+                <ul className="space-y-2.5">
                   {tour.highlights.map((h, i) => (
                     <li key={i} className="flex gap-3 text-gray-700">
-                      <span className="text-green-500 mt-0.5">✓</span>
+                      <span className="text-wandr-500 font-bold mt-0.5 shrink-0">&#10003;</span>
                       {h}
                     </li>
                   ))}
@@ -106,22 +113,20 @@ export default async function TourPage({ params }: Props) {
             )}
 
             <section>
-              <h2 className="text-xl font-bold mb-4">About this tour</h2>
-              <div className="prose prose-gray max-w-none">
+              <h2 className="text-xl font-bold mb-4 text-gray-900">About this tour</h2>
+              <div className="prose-wandr">
                 <RichText content={tour.description} />
               </div>
             </section>
 
             <div className="grid grid-cols-2 gap-6">
               {tour.included?.length > 0 && (
-                <section>
-                  <h3 className="font-semibold mb-3 text-green-700">
-                    Included
-                  </h3>
-                  <ul className="space-y-1.5 text-sm text-gray-700">
+                <section className="bg-emerald-50 rounded-2xl p-5">
+                  <h3 className="font-bold mb-3 text-emerald-800">Included</h3>
+                  <ul className="space-y-2 text-sm text-emerald-900">
                     {tour.included.map((item, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="text-green-500">+</span>
+                        <span className="text-emerald-500 font-bold shrink-0">+</span>
                         {item}
                       </li>
                     ))}
@@ -129,14 +134,12 @@ export default async function TourPage({ params }: Props) {
                 </section>
               )}
               {tour.excluded?.length > 0 && (
-                <section>
-                  <h3 className="font-semibold mb-3 text-red-600">
-                    Not included
-                  </h3>
-                  <ul className="space-y-1.5 text-sm text-gray-700">
+                <section className="bg-red-50 rounded-2xl p-5">
+                  <h3 className="font-bold mb-3 text-red-800">Not included</h3>
+                  <ul className="space-y-2 text-sm text-red-900">
                     {tour.excluded.map((item, i) => (
                       <li key={i} className="flex gap-2">
-                        <span className="text-red-400">−</span>
+                        <span className="text-red-400 font-bold shrink-0">&#8722;</span>
                         {item}
                       </li>
                     ))}

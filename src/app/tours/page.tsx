@@ -1,20 +1,22 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { PageHeader } from "@/components/ui/PageHeader";
 import { getTours } from "@/lib/fetchers";
 import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
+import type { TourDifficulty } from "@/types";
 
 export const metadata: Metadata = {
   title: "Tours",
   description: "Handpicked tours and experiences around the world.",
 };
 
-const DIFFICULTY_COLORS = {
-  easy: "bg-green-100 text-green-700",
-  moderate: "bg-blue-100 text-blue-700",
-  challenging: "bg-amber-100 text-amber-700",
-  expert: "bg-red-100 text-red-700",
+const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
+  easy: "difficulty-easy",
+  moderate: "difficulty-moderate",
+  challenging: "difficulty-challenging",
+  expert: "difficulty-expert",
 };
 
 export default async function ToursPage() {
@@ -23,55 +25,62 @@ export default async function ToursPage() {
   const tours = await getTours(locale);
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-3xl font-bold mb-2">Tours & experiences</h1>
-      <p className="text-gray-500 mb-10">
-        {tours.length} tours with live pricing and availability.
-      </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {tours.map((tour) => (
-          <Link
-            key={tour.id}
-            href={`/tours/${tour.slug}`}
-            className="group block rounded-2xl overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow"
-          >
-            <div className="relative h-56">
-              {tour.heroImage ? (
-                <Image
-                  src={tour.heroImage.url}
-                  alt={tour.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              ) : (
-                <div className="w-full h-full bg-gray-200" />
-              )}
-            </div>
-            <div className="p-5">
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className={`text-xs font-medium px-2 py-0.5 rounded-full ${DIFFICULTY_COLORS[tour.difficulty]}`}
-                >
-                  {tour.difficulty}
-                </span>
-                <span className="text-xs text-gray-400">
-                  {tour.durationDays}d
-                </span>
-                {tour.destination && (
-                  <span className="text-xs text-gray-400">
-                    · {tour.destination.name}
-                  </span>
+    <div>
+      <PageHeader
+        label="Experiences"
+        title="Tours & experiences"
+        description={`${tours.length} tours with live pricing and availability`}
+      />
+
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {tours.map((tour) => (
+            <Link
+              key={tour.id}
+              href={`/tours/${tour.slug}`}
+              className="card group flex flex-col"
+            >
+              <div className="relative h-60 overflow-hidden">
+                {tour.heroImage ? (
+                  <Image
+                    src={tour.heroImage.url}
+                    alt={tour.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-navy-500 to-navy-900" />
                 )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                  <span className={DIFFICULTY_CLASS[tour.difficulty]}>
+                    {tour.difficulty.charAt(0).toUpperCase() + tour.difficulty.slice(1)}
+                  </span>
+                  <span className="badge bg-black/40 text-white backdrop-blur-sm">
+                    {tour.durationDays} days
+                  </span>
+                </div>
               </div>
-              <h2 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {tour.title}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                {tour.summary}
-              </p>
-            </div>
-          </Link>
-        ))}
+              <div className="p-5 flex-1 flex flex-col">
+                {tour.destination && (
+                  <p className="text-xs text-gray-400 mb-1">{tour.destination.name}</p>
+                )}
+                <h2 className="font-bold text-gray-900 text-lg leading-snug group-hover:text-wandr-600 transition-colors">
+                  {tour.title}
+                </h2>
+                <p className="text-sm text-gray-500 mt-2 line-clamp-2 flex-1 leading-relaxed">
+                  {tour.summary}
+                </p>
+                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                  <span className="text-xs text-gray-400">Live pricing available</span>
+                  <span className="text-wandr-600 text-sm font-semibold group-hover:underline">
+                    View details &rarr;
+                  </span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   );

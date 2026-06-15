@@ -57,6 +57,24 @@ export async function getAllDestinationSlugs(): Promise<string[]> {
   return data.destinations.map((d) => d.slug);
 }
 
+export async function getToursForDestination(
+  destinationSlug: string,
+  locale: Locale = "en",
+  preview = false
+): Promise<Tour[]> {
+  const tours = await getTours(locale, preview);
+  return tours.filter((t) => t.destination?.slug === destinationSlug);
+}
+
+export async function getGuidesForDestination(
+  destinationSlug: string,
+  locale: Locale = "en",
+  preview = false
+): Promise<TravelGuide[]> {
+  const guides = await getGuides(locale, preview);
+  return guides.filter((g) => g.destination?.slug === destinationSlug);
+}
+
 // ─── Tours ────────────────────────────────────────────────────────────────────
 
 export async function getTours(

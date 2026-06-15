@@ -173,7 +173,6 @@ export const GET_GUIDES = gql`
       }
     }
   }
-  ${ASSET_FRAGMENT}
   ${AUTHOR_FRAGMENT}
 `;
 
@@ -207,7 +206,6 @@ export const GET_GUIDE_BY_SLUG = gql`
       }
     }
   }
-  ${ASSET_FRAGMENT}
   ${AUTHOR_FRAGMENT}
 `;
 
