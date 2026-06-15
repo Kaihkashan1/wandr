@@ -1,6 +1,8 @@
+import { getAirtablePimData, isAirtablePimConfigured } from "./airtable";
 import type { TourAvailability, TourPricing } from "@/types";
 
-// Mock PIM catalog — in production this data lives in a separate product system
+// Fallback PIM catalog when Airtable is not configured.
+// In production this data lives in a separate product system
 // and is exposed via Hygraph remote source federation (see /api/pim).
 
 export const PIM_PRICING: Record<string, TourPricing> = {
@@ -58,7 +60,7 @@ export function generateAvailability(tourId: string): TourAvailability[] {
   });
 }
 
-export function getPimData(tourId: string): {
+function getMockPimData(tourId: string): {
   pricing: TourPricing;
   availability: TourAvailability[];
 } {
@@ -73,4 +75,23 @@ export function getPimData(tourId: string): {
     pricing,
     availability: generateAvailability(tourId),
   };
+}
+
+export async function getPimData(tourId: string): Promise<{
+  pricing: TourPricing;
+  availability: TourAvailability[];
+}> {
+  if (!isAirtablePimConfigured()) {
+    return getMockPimData(tourId);
+  }
+
+  try {
+    return await getAirtablePimData(tourId);
+  } catch (err) {
+    console.warn(
+      `[PIM] Airtable fetch failed for ${tourId}, using mock data:`,
+      err instanceof Error ? err.message : err
+    );
+    return getMockPimData(tourId);
+  }
 }

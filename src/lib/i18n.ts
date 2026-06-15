@@ -78,6 +78,8 @@ const UI = {
     categoryCity: "City Break",
     categoryNature: "Nature & Wildlife",
     categoryFood: "Food & Culinary",
+    clearCategoryFilter: "Show all destinations",
+    noDestinationsInCategory: "No destinations match this category yet.",
     metaSiteTitle: "Wandr — Discover the world",
     metaSiteDescription:
       "Discover handpicked destinations, tours, and travel guides from around the world.",
@@ -174,6 +176,8 @@ const UI = {
     categoryCity: "Städtetrip",
     categoryNature: "Natur & Wildtiere",
     categoryFood: "Essen & Kulinarik",
+    clearCategoryFilter: "Alle Reiseziele anzeigen",
+    noDestinationsInCategory: "Keine Reiseziele in dieser Kategorie.",
     metaSiteTitle: "Wandr — Entdecke die Welt",
     metaSiteDescription:
       "Entdecke handverlesene Reiseziele, Touren und Reiseführer aus aller Welt.",
@@ -270,6 +274,8 @@ const UI = {
     categoryCity: "City break",
     categoryNature: "Nature & faune",
     categoryFood: "Gastronomie",
+    clearCategoryFilter: "Toutes les destinations",
+    noDestinationsInCategory: "Aucune destination dans cette catégorie.",
     metaSiteTitle: "Wandr — Découvrez le monde",
     metaSiteDescription:
       "Découvrez des destinations, circuits et guides de voyage sélectionnés dans le monde entier.",
@@ -366,6 +372,8 @@ const UI = {
     categoryCity: "Escapada urbana",
     categoryNature: "Naturaleza y fauna",
     categoryFood: "Gastronomía",
+    clearCategoryFilter: "Ver todos los destinos",
+    noDestinationsInCategory: "Ningún destino coincide con esta categoría.",
     metaSiteTitle: "Wandr — Descubre el mundo",
     metaSiteDescription:
       "Descubre destinos, tours y guías de viaje seleccionados de todo el mundo.",

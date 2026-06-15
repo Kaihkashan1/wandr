@@ -1,8 +1,9 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
+import { CategoryPills } from "@/components/ui/CategoryPills";
 import { getDestinations } from "@/lib/fetchers";
-import { CATEGORY_KEYS, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/locale";
 
 export default async function HomePage() {
@@ -50,13 +51,7 @@ export default async function HomePage() {
       </section>
 
       <section className="relative z-10 max-w-6xl mx-auto px-6 pt-4 pb-10">
-        <div className="flex flex-wrap gap-3">
-          {CATEGORY_KEYS.map((key) => (
-            <span key={key} className="category-pill">
-              {t(locale, key)}
-            </span>
-          ))}
-        </div>
+        <CategoryPills locale={locale} />
       </section>
 
       <section className="max-w-6xl mx-auto px-6 py-8 pb-20">

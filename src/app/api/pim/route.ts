@@ -12,5 +12,5 @@ export async function GET(request: NextRequest) {
     return Response.json({ error: "tourId required" }, { status: 400 });
   }
 
-  return Response.json(getPimData(tourId));
+  return Response.json(await getPimData(tourId));
 }

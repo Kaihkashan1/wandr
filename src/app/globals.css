@@ -76,19 +76,13 @@
     @apply bg-white text-gray-800 text-sm font-semibold px-4 py-2.5 rounded-full shadow-md border border-gray-200 cursor-pointer hover:border-wandr-400 hover:text-wandr-600 hover:shadow-lg transition-all hover:-translate-y-0.5;
   }
 
+  .category-pill--active {
+    @apply border-wandr-500 text-wandr-600 bg-wandr-50 shadow-lg -translate-y-0.5;
+  }
+
   /* ── Prose overrides ── */
   .prose-wandr {
     @apply prose prose-gray max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-wandr-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl;
-  }
-
-  /* ── Click-to-edit highlight (preview mode) ── */
-  [data-hygraph-field]:hover {
-    @apply outline outline-2 outline-offset-2 outline-wandr-400 cursor-pointer;
-  }
-
-  [data-hygraph-field]:hover::after {
-    content: attr(data-hygraph-field);
-    @apply absolute top-0 left-0 text-xs bg-wandr-500 text-white px-1.5 py-0.5 rounded-sm z-50 pointer-events-none;
   }
 
   /* ── Stage badges ── */

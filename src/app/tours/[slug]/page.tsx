@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getTourBySlug, getAllTourSlugs } from "@/lib/fetchers";
 import { difficultyLabel, t } from "@/lib/i18n";
-import { isPreviewEnabled } from "@/lib/preview";
+import { isPreviewEnabled, markLocalePreviewDynamic } from "@/lib/preview";
 import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { RichText } from "@/components/ui/RichText";
