@@ -8,7 +8,7 @@ import {
   getGuidesForDestination,
 } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
-import { isPreviewEnabled } from "@/lib/preview";
+import { isPreviewEnabled, markPreviewDynamic } from "@/lib/preview";
 import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
@@ -42,6 +42,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function DestinationPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
+  await markPreviewDynamic(sp);
   const preview = await isPreviewEnabled(sp);
   const locale = await resolveRequestLocale(sp);
 
@@ -89,7 +90,7 @@ export default async function DestinationPage({ params, searchParams }: Props) {
               </span>
               {preview && <StageBadge stage={destination.stage} />}
             </div>
-            <EditableField fieldId={destination.id} fieldName="name" enabled={preview}>
+            <EditableField entryId={destination.id} fieldApiId="name" enabled={preview}>
               <h1 className="text-5xl md:text-6xl font-black text-white leading-tight">
                 {destination.name}
               </h1>
@@ -103,13 +104,13 @@ export default async function DestinationPage({ params, searchParams }: Props) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Main */}
           <div className="lg:col-span-2 space-y-12">
-            <EditableField fieldId={destination.id} fieldName="tagline" enabled={preview}>
+            <EditableField entryId={destination.id} fieldApiId="tagline" enabled={preview}>
               <p className="text-xl text-gray-600 leading-relaxed font-medium">
                 {destination.tagline}
               </p>
             </EditableField>
 
-            <EditableField fieldId={destination.id} fieldName="description" enabled={preview}>
+            <EditableField entryId={destination.id} fieldApiId="description" enabled={preview}>
               <div className="prose-wandr">
                 <RichText content={destination.description} />
               </div>

@@ -35,6 +35,7 @@ export const GET_DESTINATIONS = gql`
       tagline
       region
       country
+      categories
       stage
       heroImage {
         ...AssetFields
@@ -58,7 +59,9 @@ export const GET_DESTINATION_BY_SLUG = gql`
       country
       climate
       bestTimeToVisit
+      categories
       quickFacts {
+        id
         region
         country
         climate
@@ -70,11 +73,6 @@ export const GET_DESTINATION_BY_SLUG = gql`
       }
       gallery {
         ...AssetFields
-      }
-      localizations {
-        locale
-        name
-        tagline
       }
     }
   }

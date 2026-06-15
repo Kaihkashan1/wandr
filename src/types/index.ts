@@ -16,6 +16,7 @@ export interface RichTextContent {
 }
 
 export interface QuickFacts {
+  id?: string;
   region?: string;
   country?: string;
   climate?: string;
@@ -23,6 +24,14 @@ export interface QuickFacts {
 }
 
 // ─── Destination ──────────────────────────────────────────────────────────────
+
+export type DestinationCategory =
+  | "ADVENTURE"
+  | "CULTURAL"
+  | "BEACH"
+  | "CITY"
+  | "NATURE"
+  | "FOOD";
 
 export interface Destination {
   id: string;
@@ -36,13 +45,9 @@ export interface Destination {
   gallery: Asset[];
   climate: string;
   bestTimeToVisit: string;
+  categories: DestinationCategory[];
   quickFacts?: QuickFacts;
   stage: ContentStage;
-  localizations: Array<{
-    locale: Locale;
-    name: string;
-    tagline: string;
-  }>;
   // Federated — from weather remote source
   weather?: WeatherData;
 }

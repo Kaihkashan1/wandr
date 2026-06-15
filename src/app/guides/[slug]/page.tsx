@@ -3,7 +3,7 @@ import Image from "next/image";
 import { getGuideBySlug, getAllGuideSlugs } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
 import { formatDate } from "@/lib/locale";
-import { isPreviewEnabled } from "@/lib/preview";
+import { isPreviewEnabled, markPreviewDynamic } from "@/lib/preview";
 import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
@@ -33,6 +33,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
 export default async function GuidePage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
+  await markPreviewDynamic(sp);
   const preview = await isPreviewEnabled(sp);
   const locale = await resolveRequestLocale(sp);
 
@@ -59,13 +60,13 @@ export default async function GuidePage({ params, searchParams }: Props) {
           )}
         </div>
 
-        <EditableField fieldId={guide.id} fieldName="title" enabled={preview}>
+        <EditableField entryId={guide.id} fieldApiId="title" enabled={preview}>
           <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-5 leading-tight">
             {guide.title}
           </h1>
         </EditableField>
 
-        <EditableField fieldId={guide.id} fieldName="excerpt" enabled={preview}>
+        <EditableField entryId={guide.id} fieldApiId="excerpt" enabled={preview}>
           <p className="text-xl text-gray-500 mb-8 leading-relaxed">{guide.excerpt}</p>
         </EditableField>
 
@@ -106,7 +107,7 @@ export default async function GuidePage({ params, searchParams }: Props) {
           </div>
         )}
 
-        <EditableField fieldId={guide.id} fieldName="body" enabled={preview}>
+        <EditableField entryId={guide.id} fieldApiId="body" enabled={preview}>
           <div className="prose-wandr prose-lg">
             <RichText content={guide.body} />
           </div>

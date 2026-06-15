@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@graphcms/rich-text-react-renderer": "^0.6.2",
+    "@hygraph/preview-sdk": "^1.0.7",
     "clsx": "^2.1.1",
     "graphql": "^16.9.0",
     "graphql-request": "^7.1.0",

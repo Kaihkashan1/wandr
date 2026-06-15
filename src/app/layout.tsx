@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Link from "next/link";
 import "./globals.css";
 import { Nav } from "@/components/ui/Nav";
+import { PreviewWrapper } from "@/components/preview/PreviewWrapper";
 import { t } from "@/lib/i18n";
 import { resolveRequestLocale } from "@/lib/request-locale";
 
@@ -39,9 +40,10 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={inter.variable}>
       <body className="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
-        <Nav locale={locale} />
-        <main className="flex-1">{children}</main>
-        <footer className="bg-navy-900 text-white/60 mt-auto border-t border-white/5">
+        <PreviewWrapper>
+          <Nav locale={locale} />
+          <main className="flex-1">{children}</main>
+          <footer className="bg-navy-900 text-white/60 mt-auto border-t border-white/5">
           <div className="max-w-6xl mx-auto px-6 py-14">
             <div className="flex flex-col md:flex-row md:items-start justify-between gap-10">
               <div className="space-y-4">
@@ -70,6 +72,7 @@ export default async function RootLayout({
             </div>
           </div>
         </footer>
+        </PreviewWrapper>
       </body>
     </html>
   );
