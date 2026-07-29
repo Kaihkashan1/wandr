@@ -49,7 +49,10 @@ export function isAirtablePimConfigured(): boolean {
 /** Plain text tourId, or null if missing / needs linked-record resolve. */
 function asPlainTourId(value: unknown): string | null {
   if (value == null || Array.isArray(value)) return null;
-  const id = String(value).trim();
+  let id = String(value).trim();
+  if (!id) return null;
+  // Airtable "Duplicate record" appends " copy" / " copy copy" to text fields.
+  id = id.replace(/(?:\s+copy)+$/i, "").trim();
   return id || null;
 }
 
