@@ -33,4 +33,9 @@ export async function markPreviewDynamic(
   if (headerStore.get("x-wandr-preview") === "1") {
     noStore();
   }
+  // Draft Mode alone must not serve the static published HTML (no data-hygraph attrs).
+  const { isEnabled } = await draftMode();
+  if (isEnabled) {
+    noStore();
+  }
 }

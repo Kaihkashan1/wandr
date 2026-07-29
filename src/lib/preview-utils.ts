@@ -17,3 +17,15 @@ export function withPreviewParams(
   }
   return `${url.pathname}${url.search}`;
 }
+
+/** Keep ?preview=1 (and locale) when navigating between pages in preview. */
+export function hrefWithPreview(
+  href: string,
+  opts?: { preview?: boolean; locale?: string | null }
+): string {
+  if (!opts?.preview && !opts?.locale) return href;
+  const url = new URL(href, "http://local");
+  if (opts.preview) url.searchParams.set(PREVIEW_QUERY_PARAM, "1");
+  if (opts.locale) url.searchParams.set("locale", opts.locale);
+  return `${url.pathname}${url.search}`;
+}

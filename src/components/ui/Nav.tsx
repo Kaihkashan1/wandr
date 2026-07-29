@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { LocaleSwitcher } from "@/components/ui/LocaleSwitcher";
 import { resolveLocale } from "@/lib/locale";
-import { PREVIEW_QUERY_PARAM } from "@/lib/preview-utils";
+import { hrefWithPreview, PREVIEW_QUERY_PARAM } from "@/lib/preview-utils";
 import { t } from "@/lib/i18n";
 import type { Locale } from "@/types";
 
@@ -13,17 +13,37 @@ interface NavProps {
   locale: Locale;
 }
 
-function NavLocaleSwitcher({ serverLocale }: { serverLocale: Locale }) {
+function usePreviewNavOpts(serverLocale: Locale) {
   const searchParams = useSearchParams();
-  const previewMode = searchParams.get(PREVIEW_QUERY_PARAM) === "1";
+  const preview = searchParams.get(PREVIEW_QUERY_PARAM) === "1";
   const locale = resolveLocale(searchParams.get("locale") ?? serverLocale);
-
-  return <LocaleSwitcher locale={locale} previewMode={previewMode} />;
+  return {
+    preview,
+    locale,
+    href: (path: string) =>
+      hrefWithPreview(path, {
+        preview,
+        locale: preview ? locale : undefined,
+      }),
+  };
 }
 
-export function Nav({ locale }: NavProps) {
+function NavLocaleSwitcher({ serverLocale }: { serverLocale: Locale }) {
+  const { preview, locale } = usePreviewNavOpts(serverLocale);
+  return <LocaleSwitcher locale={locale} previewMode={preview} />;
+}
+
+function NavLinks({
+  locale,
+  mobile,
+  onNavigate,
+}: {
+  locale: Locale;
+  mobile?: boolean;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { href: previewHref } = usePreviewNavOpts(locale);
 
   const navLinks = [
     { href: "/destinations", label: t(locale, "navDestinations") },
@@ -32,32 +52,59 @@ export function Nav({ locale }: NavProps) {
   ];
 
   return (
+    <>
+      {navLinks.map((link) => {
+        const isActive =
+          pathname === link.href || pathname.startsWith(link.href + "/");
+        return (
+          <Link
+            key={link.href}
+            href={previewHref(link.href)}
+            onClick={onNavigate}
+            className={
+              mobile
+                ? `block px-4 py-3 rounded-xl font-medium transition-colors ${
+                    isActive
+                      ? "bg-wandr-500/20 text-wandr-400"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  }`
+                : `px-4 py-2 rounded-full font-medium transition-colors ${
+                    isActive
+                      ? "bg-wandr-500/20 text-wandr-400"
+                      : "text-white/70 hover:text-white hover:bg-white/10"
+                  }`
+            }
+          >
+            {link.label}
+          </Link>
+        );
+      })}
+    </>
+  );
+}
+
+export function Nav({ locale }: NavProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
     <header className="sticky top-0 z-50 bg-navy-900/95 backdrop-blur-md border-b border-white/5 shadow-lg shadow-navy-900/20">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between gap-6">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <span className="text-wandr-500 font-black text-2xl tracking-tight">
-            wandr
-          </span>
-        </Link>
+        <Suspense
+          fallback={
+            <Link href="/" className="flex items-center gap-2 shrink-0">
+              <span className="text-wandr-500 font-black text-2xl tracking-tight">
+                wandr
+              </span>
+            </Link>
+          }
+        >
+          <HomeLink locale={locale} />
+        </Suspense>
 
         <nav className="hidden md:flex items-center gap-1 text-sm">
-          {navLinks.map((link) => {
-            const isActive =
-              pathname === link.href || pathname.startsWith(link.href + "/");
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 rounded-full font-medium transition-colors ${
-                  isActive
-                    ? "bg-wandr-500/20 text-wandr-400"
-                    : "text-white/70 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          <Suspense fallback={null}>
+            <NavLinks locale={locale} />
+          </Suspense>
         </nav>
 
         <div className="flex items-center gap-3">
@@ -87,26 +134,26 @@ export function Nav({ locale }: NavProps) {
 
       {mobileOpen && (
         <nav className="md:hidden border-t border-white/10 bg-navy-900/98 backdrop-blur-md px-6 py-4 space-y-1">
-          {navLinks.map((link) => {
-            const isActive =
-              pathname === link.href || pathname.startsWith(link.href + "/");
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`block px-4 py-3 rounded-xl font-medium transition-colors ${
-                  isActive
-                    ? "bg-wandr-500/20 text-wandr-400"
-                    : "text-white/70 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          <Suspense fallback={null}>
+            <NavLinks
+              locale={locale}
+              mobile
+              onNavigate={() => setMobileOpen(false)}
+            />
+          </Suspense>
         </nav>
       )}
     </header>
+  );
+}
+
+function HomeLink({ locale }: { locale: Locale }) {
+  const { href: previewHref } = usePreviewNavOpts(locale);
+  return (
+    <Link href={previewHref("/")} className="flex items-center gap-2 shrink-0">
+      <span className="text-wandr-500 font-black text-2xl tracking-tight">
+        wandr
+      </span>
+    </Link>
   );
 }

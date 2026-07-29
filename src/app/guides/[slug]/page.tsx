@@ -97,7 +97,12 @@ export default async function GuidePage({ params, searchParams }: Props) {
           </div>
         )}
 
-        <EditableField entryId={guide.id} fieldApiId="body" enabled={preview}>
+        <EditableField
+          entryId={guide.id}
+          fieldApiId="body"
+          enabled={preview}
+          richTextFormat="html"
+        >
           <div className="prose-wandr prose-lg">
             <RichText content={guide.body} />
           </div>

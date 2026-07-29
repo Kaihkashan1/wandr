@@ -9,6 +9,7 @@ import {
 } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
 import { isPreviewEnabled, markPreviewDynamic } from "@/lib/preview";
+import { hrefWithPreview } from "@/lib/preview-utils";
 import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { EditableField } from "@/components/preview/EditableField";
@@ -57,6 +58,9 @@ export default async function DestinationPage({ params, searchParams }: Props) {
   ]);
 
   if (!destination) notFound();
+
+  const previewHref = (path: string) =>
+    hrefWithPreview(path, { preview, locale: sp.locale });
 
   const quickFacts = destination.quickFacts ?? {
     region: destination.region,
@@ -110,7 +114,12 @@ export default async function DestinationPage({ params, searchParams }: Props) {
               </p>
             </EditableField>
 
-            <EditableField entryId={destination.id} fieldApiId="description" enabled={preview}>
+            <EditableField
+              entryId={destination.id}
+              fieldApiId="description"
+              enabled={preview}
+              richTextFormat="html"
+            >
               <div className="prose-wandr">
                 <RichText content={destination.description} />
               </div>
@@ -160,7 +169,7 @@ export default async function DestinationPage({ params, searchParams }: Props) {
                 <h2 className="section-heading">{t(locale, "toursIn", { name: destination.name })}</h2>
               </div>
               <Link
-                href="/tours"
+                href={previewHref("/tours")}
                 className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors"
               >
                 {t(locale, "allTours")} &rarr;
@@ -170,7 +179,7 @@ export default async function DestinationPage({ params, searchParams }: Props) {
               {tours.map((tour) => (
                 <Link
                   key={tour.id}
-                  href={`/tours/${tour.slug}`}
+                  href={previewHref(`/tours/${tour.slug}`)}
                   className="card group flex flex-col"
                 >
                   <div className="relative h-48 overflow-hidden">
@@ -212,7 +221,7 @@ export default async function DestinationPage({ params, searchParams }: Props) {
                 <h2 className="section-heading">{t(locale, "planYourTrip")}</h2>
               </div>
               <Link
-                href="/guides"
+                href={previewHref("/guides")}
                 className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors"
               >
                 {t(locale, "allGuides")} &rarr;
@@ -222,7 +231,7 @@ export default async function DestinationPage({ params, searchParams }: Props) {
               {guides.map((guide) => (
                 <Link
                   key={guide.id}
-                  href={`/guides/${guide.slug}`}
+                  href={previewHref(`/guides/${guide.slug}`)}
                   className="card group flex flex-col"
                 >
                   <div className="relative h-44 overflow-hidden">

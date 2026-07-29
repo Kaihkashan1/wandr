@@ -38,8 +38,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const locale = await resolveRequestLocale();
-  const pathname = (await headers()).get("x-pathname") ?? "";
-  const { isEnabled: isPreview } = await draftMode();
+  const headerStore = await headers();
+  const pathname = headerStore.get("x-pathname") ?? "";
+  const { isEnabled: draftPreview } = await draftMode();
+  const isPreview =
+    draftPreview || headerStore.get("x-wandr-preview") === "1";
   // Destinations index is a single-viewport layout — hide the site footer there.
   const hideFooter = pathname === "/destinations";
 
