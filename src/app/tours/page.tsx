@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
+import { PreviewLink } from "@/components/preview/PreviewLink";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getTours } from "@/lib/fetchers";
 import { difficultyLabel, t } from "@/lib/i18n";
@@ -40,7 +40,7 @@ export default async function ToursPage() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {tours.map((tour) => (
-            <Link
+            <PreviewLink
               key={tour.id}
               href={`/tours/${tour.slug}`}
               className="card group flex flex-col"
@@ -83,7 +83,7 @@ export default async function ToursPage() {
                   </span>
                 </div>
               </div>
-            </Link>
+            </PreviewLink>
           ))}
         </div>
       </div>

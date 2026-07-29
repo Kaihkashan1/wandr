@@ -1,5 +1,6 @@
 "use client";
 
+import { clearPreviewSession } from "@/components/preview/PersistPreviewQuery";
 import { usePathname } from "next/navigation";
 
 function safeReturnTo(pathname: string | null): string {
@@ -25,6 +26,7 @@ export function PreviewBanner() {
         </p>
         <a
           href={exitHref}
+          onClick={() => clearPreviewSession()}
           className="underline underline-offset-2 hover:text-amber-900 shrink-0"
         >
           Exit preview

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
+import { PreviewLink } from "@/components/preview/PreviewLink";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getGuides } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
@@ -32,7 +32,7 @@ export default async function GuidesPage() {
       <div className="max-w-6xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {guides.map((guide) => (
-            <Link
+            <PreviewLink
               key={guide.id}
               href={`/guides/${guide.slug}`}
               className="card group flex flex-col"
@@ -91,7 +91,7 @@ export default async function GuidesPage() {
                   </div>
                 )}
               </div>
-            </Link>
+            </PreviewLink>
           ))}
         </div>
       </div>

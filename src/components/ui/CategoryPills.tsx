@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import Link from "next/link";
+import { PreviewLink } from "@/components/preview/PreviewLink";
 import { CATEGORY_KEYS, t } from "@/lib/i18n";
 import {
   CATEGORY_SLUGS,
@@ -20,14 +20,14 @@ export function CategoryPills({ locale, activeCategory = null }: CategoryPillsPr
         const isActive = activeCategory === slug;
 
         return (
-          <Link
+          <PreviewLink
             key={key}
             href={`/destinations?category=${slug}`}
             className={clsx("category-pill", isActive && "category-pill--active")}
             aria-current={isActive ? "true" : undefined}
           >
             {t(locale, key)}
-          </Link>
+          </PreviewLink>
         );
       })}
     </div>

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
+import { PreviewLink } from "@/components/preview/PreviewLink";
 import { CategoryPills } from "@/components/ui/CategoryPills";
 import {
   categoryKeyForSlug,
@@ -68,12 +68,12 @@ export default async function DestinationsPage({ searchParams }: Props) {
         <CategoryPills locale={locale} activeCategory={category} />
         {category && (
           <p className="mt-2">
-            <Link
+            <PreviewLink
               href="/destinations"
               className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors"
             >
               {t(locale, "clearCategoryFilter")} &rarr;
-            </Link>
+            </PreviewLink>
           </p>
         )}
       </div>
@@ -86,7 +86,7 @@ export default async function DestinationsPage({ searchParams }: Props) {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
             {destinations.map((destination) => (
-              <Link
+              <PreviewLink
                 key={destination.id}
                 href={`/destinations/${destination.slug}`}
                 className="card group block"
@@ -125,7 +125,7 @@ export default async function DestinationsPage({ searchParams }: Props) {
                     </p>
                   </div>
                 </div>
-              </Link>
+              </PreviewLink>
             ))}
           </div>
         )}

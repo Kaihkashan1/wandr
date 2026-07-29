@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Link from "next/link";
+import { Suspense } from "react";
 import { draftMode, headers } from "next/headers";
 import "./globals.css";
 import { Nav } from "@/components/ui/Nav";
+import { FooterHomeLink, FooterNav } from "@/components/ui/FooterNav";
+import { PersistPreviewQuery } from "@/components/preview/PersistPreviewQuery";
 import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { PreviewWrapper } from "@/components/preview/PreviewWrapper";
 import { t } from "@/lib/i18n";
@@ -26,12 +28,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const footerLinkKeys = [
-  { href: "/destinations", key: "navDestinations" as const },
-  { href: "/tours", key: "navTours" as const },
-  { href: "/guides", key: "navGuides" as const },
-];
-
 export default async function RootLayout({
   children,
 }: {
@@ -49,7 +45,10 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={inter.variable}>
       <body className="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
-        <PreviewWrapper>
+        <PreviewWrapper enabled={isPreview}>
+          <Suspense fallback={null}>
+            <PersistPreviewQuery enabled={isPreview} />
+          </Suspense>
           <Nav locale={locale} />
           {isPreview && <PreviewBanner />}
           <main className="flex-1 flex flex-col">{children}</main>
@@ -58,27 +57,12 @@ export default async function RootLayout({
               <div className="max-w-6xl mx-auto px-6 py-14">
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-10">
                   <div className="space-y-4">
-                    <Link
-                      href="/"
-                      className="text-wandr-500 font-black text-2xl tracking-tight inline-block"
-                    >
-                      wandr
-                    </Link>
+                    <FooterHomeLink />
                     <p className="text-sm leading-relaxed max-w-xs text-white/50">
                       {t(locale, "footerTagline")}
                     </p>
                   </div>
-                  <nav className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-                    {footerLinkKeys.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="text-white/60 hover:text-wandr-400 transition-colors"
-                      >
-                        {t(locale, link.key)}
-                      </Link>
-                    ))}
-                  </nav>
+                  <FooterNav locale={locale} />
                 </div>
                 <div className="mt-12 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/40">
                   <p>

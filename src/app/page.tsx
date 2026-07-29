@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import Image from "next/image";
-import Link from "next/link";
+import { PreviewLink } from "@/components/preview/PreviewLink";
 import { CategoryPills } from "@/components/ui/CategoryPills";
 import { getDestinations } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
@@ -38,12 +38,12 @@ export default async function HomePage() {
             {t(locale, "heroSubtitle")}
           </p>
           <div className="flex flex-wrap gap-4">
-            <Link href="/destinations" className="btn-primary text-base px-8 py-3.5">
+            <PreviewLink href="/destinations" className="btn-primary text-base px-8 py-3.5">
               {t(locale, "heroCtaDestinations")}
-            </Link>
-            <Link href="/tours" className="btn-secondary text-base px-8 py-3.5">
+            </PreviewLink>
+            <PreviewLink href="/tours" className="btn-secondary text-base px-8 py-3.5">
               {t(locale, "heroCtaTours")}
-            </Link>
+            </PreviewLink>
           </div>
         </div>
 
@@ -62,17 +62,17 @@ export default async function HomePage() {
               {t(locale, "destinationsCount", { count: destinations.length })}
             </p>
           </div>
-          <Link
+          <PreviewLink
             href="/destinations"
             className="text-sm font-semibold text-wandr-600 hover:text-wandr-700 transition-colors shrink-0"
           >
             {t(locale, "viewAll")} &rarr;
-          </Link>
+          </PreviewLink>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {destinations.slice(0, 6).map((destination, idx) => (
-            <Link
+            <PreviewLink
               key={destination.id}
               href={`/destinations/${destination.slug}`}
               className="card group block"
@@ -111,7 +111,7 @@ export default async function HomePage() {
                   <span className="text-xs text-gray-400">{destination.country}</span>
                 </div>
               </div>
-            </Link>
+            </PreviewLink>
           ))}
         </div>
       </section>
