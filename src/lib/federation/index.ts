@@ -1,5 +1,5 @@
 import { localeToCurrency } from "@/lib/locale";
-import { getPimData } from "./pim";
+import { filterUpcomingAvailability, getPimData } from "./pim";
 import { convertAmount, getExchangeRates } from "./exchange-rates";
 import type { Locale, Tour, TourPricing } from "@/types";
 
@@ -35,7 +35,9 @@ export async function enrichTourWithFederation(
   locale: Locale
 ): Promise<Tour> {
   const pim = tour.pimData ?? (await getPimData(tour.slug));
-  const { pricing, availability } = pim;
+  const pricing = pim.pricing;
+  // Always re-filter: Hygraph remote cache may still include past dates.
+  const availability = filterUpcomingAvailability(pim.availability);
   const targetCurrency = localeToCurrency(locale);
 
   try {

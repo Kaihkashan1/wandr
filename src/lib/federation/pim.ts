@@ -60,6 +60,22 @@ export function generateAvailability(tourId: string): TourAvailability[] {
   });
 }
 
+function todayISODate(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+/** Drop departures before today (keeps today and future). */
+export function filterUpcomingAvailability(
+  slots: TourAvailability[]
+): TourAvailability[] {
+  const today = todayISODate();
+  return slots.filter((slot) => slot.date >= today);
+}
+
 function getMockPimData(tourId: string): {
   pricing: TourPricing;
   availability: TourAvailability[];
@@ -73,25 +89,33 @@ function getMockPimData(tourId: string): {
 
   return {
     pricing,
-    availability: generateAvailability(tourId),
+    availability: filterUpcomingAvailability(generateAvailability(tourId)),
   };
 }
+
+export type PimSource = "airtable" | "mock";
 
 export async function getPimData(tourId: string): Promise<{
   pricing: TourPricing;
   availability: TourAvailability[];
+  source: PimSource;
 }> {
   if (!isAirtablePimConfigured()) {
-    return getMockPimData(tourId);
+    return { ...getMockPimData(tourId), source: "mock" };
   }
 
   try {
-    return await getAirtablePimData(tourId);
+    const data = await getAirtablePimData(tourId);
+    return {
+      pricing: data.pricing,
+      availability: filterUpcomingAvailability(data.availability),
+      source: "airtable",
+    };
   } catch (err) {
     console.warn(
       `[PIM] Airtable fetch failed for ${tourId}, using mock data:`,
       err instanceof Error ? err.message : err
     );
-    return getMockPimData(tourId);
+    return { ...getMockPimData(tourId), source: "mock" };
   }
 }

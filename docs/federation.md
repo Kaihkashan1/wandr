@@ -104,7 +104,7 @@ AIRTABLE_PRICING_TABLE=Pricing
 AIRTABLE_DEPARTURES_TABLE=Departures
 ```
 
-Add the same vars in Vercel project settings for production.
+Add the **same vars in Vercel** (Project → Settings → Environment Variables) for Production (and Preview if you use it), then **redeploy**. Without them, production silently uses mock data — dates will be rolling “today + N weeks” and will not match Airtable.
 
 ### 4. How it wires up
 
@@ -116,10 +116,10 @@ flowchart LR
   EN --> UI[Tour page]
 ```
 
-- If `AIRTABLE_API_KEY` + `AIRTABLE_BASE_ID` are set → fetches from Airtable (cached 5 min)
-- If unset or fetch fails → falls back to hardcoded mock data in `pim.ts`
+- If `AIRTABLE_API_KEY` + `AIRTABLE_BASE_ID` are set → fetches from Airtable (cached ~60s in prod)
+- If unset or fetch fails → falls back to hardcoded mock data in `pim.ts` (dates generated from today)
 
-Test the endpoint: `GET /api/pim?tourId=kyoto-culture-5d`
+Test: `GET /api/pim?tourId=kyoto-culture-5d` — response header `X-PIM-Source` should be `airtable` (not `mock`).
 
 
 ## Resilience
