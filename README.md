@@ -6,7 +6,7 @@ A production-grade travel discovery platform built to showcase advanced Hygraph 
 
 | Capability | Status | Where |
 |---|---|---|
-| Localization | ✓ Ready | All pages — locale switcher in nav |
+| Localization | ✓ Ready | All pages — locale switcher in nav (EN/DE/FR/ES/JA · JA uses JPY) |
 | Live preview + click-to-edit | ✓ Ready | `/destinations/[slug]`, `/guides/[slug]` |
 | Personalization | ✓ Ready | Homepage hero swaps by persona |
 | Content stages | ✓ Ready | Stage badges in preview mode |
