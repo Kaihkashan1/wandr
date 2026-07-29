@@ -27,9 +27,13 @@ export function PreviewWrapper({ children }: PreviewWrapperProps) {
     process.env.NEXT_PUBLIC_HYGRAPH_STUDIO_URL
   );
 
+  const shell = (
+    <div className="flex flex-col flex-1 min-h-screen">{children}</div>
+  );
+
   // Both are required — wrong/missing studioUrl breaks click-to-edit on regional Studio hosts.
   if (!endpoint || !studioUrl) {
-    return <>{children}</>;
+    return shell;
   }
 
   return (
@@ -49,7 +53,7 @@ export function PreviewWrapper({ children }: PreviewWrapperProps) {
         button: { backgroundColor: "#f97316", color: "white" },
       }}
     >
-      {children}
+      {shell}
     </HygraphPreviewNextjs>
   );
 }
