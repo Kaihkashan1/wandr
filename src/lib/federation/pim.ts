@@ -1,4 +1,5 @@
 import { getAirtablePimData, isAirtablePimConfigured } from "./airtable";
+import type { AirtablePimDebug } from "./airtable";
 import type { TourAvailability, TourPricing } from "@/types";
 
 // Fallback PIM catalog when Airtable is not configured.
@@ -97,21 +98,29 @@ function getMockPimData(tourId: string): {
 
 export type PimSource = "airtable" | "mock";
 
-export async function getPimData(tourId: string): Promise<{
+export async function getPimData(
+  tourId: string,
+  options?: { debug?: boolean }
+): Promise<{
   pricing: TourPricing;
   availability: TourAvailability[];
   source: PimSource;
+  debug?: AirtablePimDebug;
 }> {
   if (!isAirtablePimConfigured()) {
     return { ...getMockPimData(tourId), source: "mock" };
   }
 
   try {
-    const data = await getAirtablePimData(tourId);
+    const data = await getAirtablePimData(tourId, options);
+    const availability = filterUpcomingAvailability(data.availability);
     return {
       pricing: data.pricing,
-      availability: filterUpcomingAvailability(data.availability),
+      availability,
       source: "airtable",
+      ...(options?.debug && data.debug
+        ? { debug: { ...data.debug, upcomingCount: availability.length } }
+        : {}),
     };
   } catch (err) {
     console.warn(

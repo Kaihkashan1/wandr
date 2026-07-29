@@ -24,6 +24,19 @@ function stage(preview: boolean): Stage {
   return preview ? "DRAFT" : "PUBLISHED";
 }
 
+/** Prefer localized QuickFacts for region/country (root fields are not localized). */
+function withLocalizedFacts(destination: Destination): Destination {
+  const facts = destination.quickFacts;
+  if (!facts) return destination;
+  return {
+    ...destination,
+    region: facts.region || destination.region,
+    country: facts.country || destination.country,
+    climate: facts.climate || destination.climate,
+    bestTimeToVisit: facts.bestTimeToVisit || destination.bestTimeToVisit,
+  };
+}
+
 // ─── Destinations ─────────────────────────────────────────────────────────────
 
 export async function getDestinations(
@@ -35,7 +48,7 @@ export async function getDestinations(
     GET_DESTINATIONS,
     { locale, stage: stage(preview) }
   );
-  return data.destinations;
+  return data.destinations.map(withLocalizedFacts);
 }
 
 export async function getDestinationBySlug(
@@ -48,7 +61,7 @@ export async function getDestinationBySlug(
     GET_DESTINATION_BY_SLUG,
     { slug, locale, stage: stage(preview) }
   );
-  return data.destination;
+  return data.destination ? withLocalizedFacts(data.destination) : null;
 }
 
 export async function getAllDestinationSlugs(): Promise<string[]> {

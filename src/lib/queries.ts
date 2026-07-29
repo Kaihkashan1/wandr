@@ -37,6 +37,13 @@ export const GET_DESTINATIONS = gql`
       country
       categories
       stage
+      quickFacts {
+        id
+        region
+        country
+        climate
+        bestTimeToVisit
+      }
       heroImage {
         ...AssetFields
       }
