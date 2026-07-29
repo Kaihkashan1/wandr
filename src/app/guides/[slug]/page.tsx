@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getGuideBySlug, getAllGuideSlugs } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
-import { formatDate } from "@/lib/locale";
 import { isPreviewEnabled, markPreviewDynamic } from "@/lib/preview";
 import { resolveRequestLocale } from "@/lib/request-locale";
 import { StageBadge } from "@/components/ui/StageBadge";
@@ -83,15 +82,6 @@ export default async function GuidePage({ params, searchParams }: Props) {
             )}
             <div>
               <p className="font-bold text-gray-900 text-sm">{guide.author.name}</p>
-              {guide.publishedAt && (
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {formatDate(guide.publishedAt, locale, {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-              )}
             </div>
           </div>
         )}

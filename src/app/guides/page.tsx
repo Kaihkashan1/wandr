@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { getGuides } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
-import { formatDate, resolveLocale } from "@/lib/locale";
+import { resolveLocale } from "@/lib/locale";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -87,15 +87,6 @@ export default async function GuidesPage() {
                       <p className="text-xs font-semibold text-gray-700">
                         {guide.author.name}
                       </p>
-                      {guide.publishedAt && (
-                        <p className="text-xs text-gray-400">
-                          {formatDate(guide.publishedAt, locale, {
-                            day: "numeric",
-                            month: "short",
-                            year: "numeric",
-                          })}
-                        </p>
-                      )}
                     </div>
                   </div>
                 )}
