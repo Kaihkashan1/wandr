@@ -5,7 +5,6 @@ import { PageHeader } from "@/components/ui/PageHeader";
 import { getGuides } from "@/lib/fetchers";
 import { t } from "@/lib/i18n";
 import { formatDate, resolveLocale } from "@/lib/locale";
-import { StageBadge } from "@/components/ui/StageBadge";
 import type { Metadata } from "next";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -53,50 +52,53 @@ export default async function GuidesPage() {
               </div>
 
               <div className="p-5 flex-1 flex flex-col">
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                {guide.tags?.slice(0, 2).map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium"
-                  >
-                    {tag}
-                  </span>
-                ))}
-                <StageBadge stage={guide.stage} />
-              </div>
-
-              <h2 className="font-bold text-gray-900 group-hover:text-wandr-600 transition-colors line-clamp-2 text-base leading-snug">
-                {guide.title}
-              </h2>
-              <p className="text-sm text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">
-                {guide.excerpt}
-              </p>
-
-              {guide.author && (
-                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
-                  {guide.author.avatar && (
-                    <Image
-                      src={guide.author.avatar.url}
-                      alt={guide.author.name}
-                      width={28}
-                      height={28}
-                      className="rounded-full object-cover ring-2 ring-white"
-                    />
-                  )}
-                  <div>
-                    <p className="text-xs font-semibold text-gray-700">{guide.author.name}</p>
-                    {guide.publishedAt && (
-                      <p className="text-xs text-gray-400">
-                        {formatDate(guide.publishedAt, locale, {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </p>
-                    )}
+                {guide.tags && guide.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mb-2">
+                    {guide.tags.slice(0, 2).map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                </div>
-              )}
+                )}
+
+                <h2 className="font-bold text-gray-900 group-hover:text-wandr-600 transition-colors line-clamp-2 text-base leading-snug">
+                  {guide.title}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">
+                  {guide.excerpt}
+                </p>
+
+                {guide.author && (
+                  <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-100">
+                    {guide.author.avatar && (
+                      <Image
+                        src={guide.author.avatar.url}
+                        alt={guide.author.name}
+                        width={28}
+                        height={28}
+                        className="rounded-full object-cover ring-2 ring-white"
+                      />
+                    )}
+                    <div>
+                      <p className="text-xs font-semibold text-gray-700">
+                        {guide.author.name}
+                      </p>
+                      {guide.publishedAt && (
+                        <p className="text-xs text-gray-400">
+                          {formatDate(guide.publishedAt, locale, {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </Link>
           ))}
