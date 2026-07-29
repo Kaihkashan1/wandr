@@ -7,7 +7,7 @@ A production-grade travel discovery platform built to showcase advanced Hygraph 
 | Capability | Status | Where |
 |---|---|---|
 | Localization | ✓ Ready | All pages — locale switcher in nav (EN/DE/FR/ES/JA · JA uses JPY) |
-| Live preview + click-to-edit | ✓ Ready | `/destinations/[slug]`, `/guides/[slug]` |
+| Live preview + click-to-edit | ✓ Ready | `/destinations/[slug]`, `/tours/[slug]`, `/guides/[slug]` |
 | Personalization | ✓ Ready | Homepage hero swaps by persona |
 | Content stages | ✓ Ready | Stage badges in preview mode |
 | Federation (PIM) | ✓ Ready | Tour pricing/availability via `/api/pim` |
@@ -53,10 +53,17 @@ Use the **language switcher** in the top nav. Content switches locale in real ti
 Use the **persona switcher** in the nav. The homepage hero — headline, subheadline, CTA, and background image — changes based on the active persona. This reads from the `ContentVariant` model filtered by the selected `Audience` slug.
 
 ### Live preview
-Set up the preview URL in Hygraph (see `SCHEMA_SETUP.md`). Open any `Destination` or `TravelGuide` in the Hygraph editor and click the preview button. The frontend activates Draft Mode and renders the unpublished version.
+Set up the preview URL in Hygraph for each model. Open any `Destination`, `Tour`, or `TravelGuide` in the Hygraph editor and click the preview button. The frontend activates Draft Mode and renders the unpublished version.
+
+Preview URLs:
+```
+https://wandr-showcase.vercel.app/api/preview?slug={slug}&model=destination&locale={locale}
+https://wandr-showcase.vercel.app/api/preview?slug={slug}&model=tour&locale={locale}
+https://wandr-showcase.vercel.app/api/preview?slug={slug}&model=guide&locale={locale}
+```
 
 ### Click-to-edit
-In preview mode, hover over any field wrapped in `<EditableField>` (name, tagline, description, body). Clicking sends a `postMessage` to the Hygraph editor sidebar, which jumps to that field.
+In preview mode, hover over any field wrapped in `<EditableField>` (name, title, summary, description, body, etc.). Clicking jumps to that field in Hygraph Studio (iframe) or opens Studio in a new tab (standalone).
 
 ### Content stages
 When preview mode is active, a `<StageBadge>` appears on all content showing its current stage (Draft, In review, Approved, Published).
@@ -75,7 +82,7 @@ src/
       [slug]/page.tsx           # Destination detail — preview + click-to-edit
     tours/
       page.tsx                  # Tour list
-      [slug]/page.tsx           # Tour detail — federated pricing
+      [slug]/page.tsx           # Tour detail — preview + click-to-edit + federated pricing
     guides/
       page.tsx                  # Guide list
       [slug]/page.tsx           # Guide detail — preview + click-to-edit

@@ -2,8 +2,9 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getTourBySlug, getAllTourSlugs } from "@/lib/fetchers";
 import { difficultyLabel, t } from "@/lib/i18n";
-import { isPreviewEnabled, markLocalePreviewDynamic } from "@/lib/preview";
+import { isPreviewEnabled, markPreviewDynamic } from "@/lib/preview";
 import { resolveRequestLocale } from "@/lib/request-locale";
+import { EditableField } from "@/components/preview/EditableField";
 import { StageBadge } from "@/components/ui/StageBadge";
 import { RichText } from "@/components/ui/RichText";
 import { TourPricingCard } from "@/components/ui/TourPricingCard";
@@ -43,6 +44,7 @@ const DIFFICULTY_CLASS: Record<TourDifficulty, string> = {
 export default async function TourPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const sp = await searchParams;
+  await markPreviewDynamic(sp);
   const preview = await isPreviewEnabled(sp);
   const locale = await resolveRequestLocale(sp);
 
@@ -68,12 +70,24 @@ export default async function TourPage({ params, searchParams }: Props) {
         <div className="relative z-10 h-full flex items-end max-w-6xl mx-auto px-6 pb-12">
           <div>
             <div className="flex items-center flex-wrap gap-2 mb-4">
-              <span className={DIFFICULTY_CLASS[tour.difficulty]}>
-                {difficultyLabel(locale, tour.difficulty)}
-              </span>
-              <span className="badge bg-white/20 text-white backdrop-blur-sm">
-                {t(locale, "days", { count: tour.durationDays })}
-              </span>
+              <EditableField
+                entryId={tour.id}
+                fieldApiId="difficulty"
+                enabled={preview}
+              >
+                <span className={DIFFICULTY_CLASS[tour.difficulty]}>
+                  {difficultyLabel(locale, tour.difficulty)}
+                </span>
+              </EditableField>
+              <EditableField
+                entryId={tour.id}
+                fieldApiId="durationDays"
+                enabled={preview}
+              >
+                <span className="badge bg-white/20 text-white backdrop-blur-sm">
+                  {t(locale, "days", { count: tour.durationDays })}
+                </span>
+              </EditableField>
               {tour.destination && (
                 <span className="badge bg-white/20 text-white backdrop-blur-sm">
                   {tour.destination.name}
@@ -81,9 +95,11 @@ export default async function TourPage({ params, searchParams }: Props) {
               )}
               {preview && <StageBadge stage={tour.stage} />}
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white leading-tight max-w-2xl">
-              {tour.title}
-            </h1>
+            <EditableField entryId={tour.id} fieldApiId="title" enabled={preview}>
+              <h1 className="text-4xl md:text-5xl font-black text-white leading-tight max-w-2xl">
+                {tour.title}
+              </h1>
+            </EditableField>
           </div>
         </div>
       </section>
@@ -91,54 +107,101 @@ export default async function TourPage({ params, searchParams }: Props) {
       <div className="max-w-6xl mx-auto px-6 py-14">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <div className="lg:col-span-2 space-y-10">
-            <p className="text-lg text-gray-600 leading-relaxed">{tour.summary}</p>
+            <EditableField
+              entryId={tour.id}
+              fieldApiId="summary"
+              enabled={preview}
+            >
+              <p className="text-lg text-gray-600 leading-relaxed">
+                {tour.summary}
+              </p>
+            </EditableField>
 
             {tour.highlights?.length > 0 && (
               <section>
-                <h2 className="text-xl font-bold mb-4 text-gray-900">{t(locale, "highlights")}</h2>
-                <ul className="space-y-2.5">
-                  {tour.highlights.map((h, i) => (
-                    <li key={i} className="flex gap-3 text-gray-700">
-                      <span className="text-wandr-500 font-bold mt-0.5 shrink-0">&#10003;</span>
-                      {h}
-                    </li>
-                  ))}
-                </ul>
+                <h2 className="text-xl font-bold mb-4 text-gray-900">
+                  {t(locale, "highlights")}
+                </h2>
+                <EditableField
+                  entryId={tour.id}
+                  fieldApiId="highlights"
+                  enabled={preview}
+                >
+                  <ul className="space-y-2.5">
+                    {tour.highlights.map((h, i) => (
+                      <li key={i} className="flex gap-3 text-gray-700">
+                        <span className="text-wandr-500 font-bold mt-0.5 shrink-0">
+                          &#10003;
+                        </span>
+                        {h}
+                      </li>
+                    ))}
+                  </ul>
+                </EditableField>
               </section>
             )}
 
             <section>
-              <h2 className="text-xl font-bold mb-4 text-gray-900">{t(locale, "aboutTour")}</h2>
-              <div className="prose-wandr">
-                <RichText content={tour.description} />
-              </div>
+              <h2 className="text-xl font-bold mb-4 text-gray-900">
+                {t(locale, "aboutTour")}
+              </h2>
+              <EditableField
+                entryId={tour.id}
+                fieldApiId="description"
+                enabled={preview}
+                richTextFormat="html"
+              >
+                <div className="prose-wandr">
+                  <RichText content={tour.description} />
+                </div>
+              </EditableField>
             </section>
 
             <div className="grid grid-cols-2 gap-6">
               {tour.included?.length > 0 && (
                 <section className="bg-emerald-50 rounded-2xl p-5">
-                  <h3 className="font-bold mb-3 text-emerald-800">{t(locale, "included")}</h3>
-                  <ul className="space-y-2 text-sm text-emerald-900">
-                    {tour.included.map((item, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="text-emerald-500 font-bold shrink-0">+</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="font-bold mb-3 text-emerald-800">
+                    {t(locale, "included")}
+                  </h3>
+                  <EditableField
+                    entryId={tour.id}
+                    fieldApiId="included"
+                    enabled={preview}
+                  >
+                    <ul className="space-y-2 text-sm text-emerald-900">
+                      {tour.included.map((item, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="text-emerald-500 font-bold shrink-0">
+                            +
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </EditableField>
                 </section>
               )}
               {tour.excluded?.length > 0 && (
                 <section className="bg-red-50 rounded-2xl p-5">
-                  <h3 className="font-bold mb-3 text-red-800">{t(locale, "notIncluded")}</h3>
-                  <ul className="space-y-2 text-sm text-red-900">
-                    {tour.excluded.map((item, i) => (
-                      <li key={i} className="flex gap-2">
-                        <span className="text-red-400 font-bold shrink-0">&#8722;</span>
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
+                  <h3 className="font-bold mb-3 text-red-800">
+                    {t(locale, "notIncluded")}
+                  </h3>
+                  <EditableField
+                    entryId={tour.id}
+                    fieldApiId="excluded"
+                    enabled={preview}
+                  >
+                    <ul className="space-y-2 text-sm text-red-900">
+                      {tour.excluded.map((item, i) => (
+                        <li key={i} className="flex gap-2">
+                          <span className="text-red-400 font-bold shrink-0">
+                            &#8722;
+                          </span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </EditableField>
                 </section>
               )}
             </div>
