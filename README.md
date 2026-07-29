@@ -26,7 +26,7 @@ npm install
 
 1. Create a new project at [hygraph.com](https://hygraph.com)
 2. Follow `hygraph/SCHEMA_SETUP.md` to create all models
-3. Add locales: EN (default), DE, FR, ES
+3. Add locales: EN (default), DE, FR, ES, JA
 4. Create content following `hygraph/SEED_DATA.md`
 5. Copy your API endpoint and auth token
 

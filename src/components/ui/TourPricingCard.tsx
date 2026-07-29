@@ -98,7 +98,7 @@ export function TourPricingCard({ locale, pricing, availability }: TourPricingCa
             {t(locale, "upcomingDepartures")}
           </h3>
           <ul className="space-y-2">
-            {availability.slice(0, 5).map((slot) => (
+            {availability.map((slot) => (
               <li
                 key={slot.date}
                 className="flex items-center justify-between text-sm py-1.5 border-b border-gray-50 last:border-0"

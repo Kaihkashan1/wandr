@@ -1,23 +1,26 @@
-import { unstable_cache } from "next/cache";
 import type { TourAvailability, TourPricing } from "@/types";
 
 interface AirtableListResponse<T> {
   records: Array<{ id: string; fields: T }>;
+  offset?: string;
 }
 
 interface AirtablePricingFields {
-  tourId: string;
-  basePrice: number;
+  tourId?: string;
+  basePrice?: number;
   currency?: string;
   discountedPrice?: number;
   pricePerPerson?: boolean;
+  [key: string]: unknown;
 }
 
 interface AirtableDepartureFields {
-  tourId: string;
-  date: string;
-  spotsTotal: number;
-  spotsRemaining: number;
+  tourId?: string;
+  date?: string;
+  Date?: string;
+  spotsTotal?: number;
+  spotsRemaining?: number;
+  [key: string]: unknown;
 }
 
 function readAirtableEnv() {
@@ -38,30 +41,56 @@ export function isAirtablePimConfigured(): boolean {
   return readAirtableEnv() !== null;
 }
 
-async function listAirtableRecords<T>(
+function normalizeTourId(value: unknown): string | null {
+  if (value == null) return null;
+  // Linked-record fields come back as arrays of record ids — skip those.
+  if (Array.isArray(value)) return null;
+  const id = String(value).trim();
+  return id || null;
+}
+
+/** Airtable date fields are YYYY-MM-DD; tolerate datetimes. */
+function normalizeDate(value: unknown): string | null {
+  if (value == null) return null;
+  const match = String(value).match(/^(\d{4}-\d{2}-\d{2})/);
+  return match?.[1] ?? null;
+}
+
+async function listAirtableRecords<T extends Record<string, unknown>>(
   table: string,
-  filterFormula: string
+  filterFormula?: string
 ): Promise<T[]> {
   const config = readAirtableEnv();
   if (!config) {
     throw new Error("Airtable is not configured");
   }
 
-  const params = new URLSearchParams({ filterByFormula: filterFormula });
-  const url = `https://api.airtable.com/v0/${config.baseId}/${encodeURIComponent(table)}?${params}`;
+  const fields: T[] = [];
+  let offset: string | undefined;
 
-  const isDev = process.env.NODE_ENV === "development";
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${config.apiKey}` },
-    ...(isDev ? { cache: "no-store" } : { next: { revalidate: 60 } }),
-  });
+  do {
+    const params = new URLSearchParams({ pageSize: "100" });
+    if (filterFormula) params.set("filterByFormula", filterFormula);
+    if (offset) params.set("offset", offset);
 
-  if (!res.ok) {
-    throw new Error(`Airtable error (${table}): ${res.status}`);
-  }
+    const url = `https://api.airtable.com/v0/${config.baseId}/${encodeURIComponent(table)}?${params}`;
 
-  const data = (await res.json()) as AirtableListResponse<T>;
-  return data.records.map((record) => record.fields);
+    const res = await fetch(url, {
+      headers: { Authorization: `Bearer ${config.apiKey}` },
+      // Demo needs Airtable edits to show up immediately (no Next/CDN cache).
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error(`Airtable error (${table}): ${res.status}`);
+    }
+
+    const data = (await res.json()) as AirtableListResponse<T>;
+    fields.push(...data.records.map((record) => record.fields));
+    offset = data.offset;
+  } while (offset);
+
+  return fields;
 }
 
 function toAvailabilityStatus(
@@ -72,27 +101,48 @@ function toAvailabilityStatus(
   return "available";
 }
 
-function mapPricing(fields: AirtablePricingFields): TourPricing {
+function mapPricing(
+  fields: AirtablePricingFields,
+  tourId: string
+): TourPricing | null {
+  if (typeof fields.basePrice !== "number") return null;
   return {
-    tourId: fields.tourId,
+    tourId,
     basePrice: fields.basePrice,
-    currency: fields.currency ?? "EUR",
-    discountedPrice: fields.discountedPrice,
-    pricePerPerson: fields.pricePerPerson ?? true,
+    currency: typeof fields.currency === "string" ? fields.currency : "EUR",
+    discountedPrice:
+      typeof fields.discountedPrice === "number"
+        ? fields.discountedPrice
+        : undefined,
+    pricePerPerson:
+      typeof fields.pricePerPerson === "boolean"
+        ? fields.pricePerPerson
+        : true,
   };
 }
 
-function mapDeparture(fields: AirtableDepartureFields): TourAvailability {
+function mapDeparture(
+  fields: AirtableDepartureFields,
+  tourId: string
+): TourAvailability | null {
+  const date = normalizeDate(fields.date ?? fields.Date);
+  if (!date) return null;
+
+  const spotsTotal =
+    typeof fields.spotsTotal === "number" ? fields.spotsTotal : 0;
+  const spotsRemaining =
+    typeof fields.spotsRemaining === "number" ? fields.spotsRemaining : 0;
+
   return {
-    tourId: fields.tourId,
-    date: fields.date,
-    spotsTotal: fields.spotsTotal,
-    spotsRemaining: fields.spotsRemaining,
-    status: toAvailabilityStatus(fields.spotsRemaining),
+    tourId,
+    date,
+    spotsTotal,
+    spotsRemaining,
+    status: toAvailabilityStatus(spotsRemaining),
   };
 }
 
-async function fetchPimDataFromAirtable(tourId: string): Promise<{
+export async function getAirtablePimData(tourId: string): Promise<{
   pricing: TourPricing;
   availability: TourAvailability[];
 }> {
@@ -101,42 +151,26 @@ async function fetchPimDataFromAirtable(tourId: string): Promise<{
     throw new Error("Airtable is not configured");
   }
 
-  const escapedTourId = tourId.replace(/'/g, "\\'");
-  const filter = `{tourId}='${escapedTourId}'`;
-
+  // Load table rows and match tourId in JS (trims whitespace; avoids formula
+  // misses on newly typed rows). Fine for a small demo base.
   const [pricingRows, departureRows] = await Promise.all([
-    listAirtableRecords<AirtablePricingFields>(config.pricingTable, filter),
-    listAirtableRecords<AirtableDepartureFields>(
-      config.departuresTable,
-      filter
-    ),
+    listAirtableRecords<AirtablePricingFields>(config.pricingTable),
+    listAirtableRecords<AirtableDepartureFields>(config.departuresTable),
   ]);
 
-  const pricingRow = pricingRows[0];
-  if (!pricingRow) {
+  const pricingRow = pricingRows.find(
+    (row) => normalizeTourId(row.tourId) === tourId
+  );
+  const pricing = pricingRow ? mapPricing(pricingRow, tourId) : null;
+  if (!pricing) {
     throw new Error(`No Airtable pricing row for tourId: ${tourId}`);
   }
 
-  return {
-    pricing: mapPricing(pricingRow),
-    availability: departureRows
-      .map(mapDeparture)
-      .sort((a, b) => a.date.localeCompare(b.date)),
-  };
-}
+  const availability = departureRows
+    .filter((row) => normalizeTourId(row.tourId) === tourId)
+    .map((row) => mapDeparture(row, tourId))
+    .filter((slot): slot is TourAvailability => slot !== null)
+    .sort((a, b) => a.date.localeCompare(b.date));
 
-const getCachedAirtablePimData = unstable_cache(
-  fetchPimDataFromAirtable,
-  ["airtable-pim"],
-  { revalidate: 60 }
-);
-
-export async function getAirtablePimData(tourId: string): Promise<{
-  pricing: TourPricing;
-  availability: TourAvailability[];
-}> {
-  if (process.env.NODE_ENV === "development") {
-    return fetchPimDataFromAirtable(tourId);
-  }
-  return getCachedAirtablePimData(tourId);
+  return { pricing, availability };
 }

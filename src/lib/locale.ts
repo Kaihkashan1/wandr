@@ -1,12 +1,13 @@
 import type { Locale } from "@/types";
 
-export const LOCALES: Locale[] = ["en", "de", "fr", "es"];
+export const LOCALES: Locale[] = ["en", "de", "fr", "es", "ja"];
 
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: "English",
   de: "Deutsch",
   fr: "Français",
   es: "Español",
+  ja: "日本語",
 };
 
 export const DEFAULT_LOCALE: Locale = "en";
@@ -16,6 +17,7 @@ export const LOCALE_CURRENCY: Record<Locale, string> = {
   de: "EUR",
   fr: "EUR",
   es: "EUR",
+  ja: "JPY",
 };
 
 export function localeToCurrency(locale: Locale): string {
@@ -36,6 +38,7 @@ const DATE_LOCALE: Record<Locale, string> = {
   de: "de-DE",
   fr: "fr-FR",
   es: "es-ES",
+  ja: "ja-JP",
 };
 
 export function formatDate(

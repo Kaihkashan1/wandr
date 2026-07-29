@@ -34,9 +34,10 @@ export async function enrichTourWithFederation(
   tour: Tour,
   locale: Locale
 ): Promise<Tour> {
-  const pim = tour.pimData ?? (await getPimData(tour.slug));
+  // Always hit the PIM (Airtable) directly so new departures show up without
+  // waiting on Hygraph remote-field TTL. tour.pimData remains for GraphQL demos.
+  const pim = await getPimData(tour.slug);
   const pricing = pim.pricing;
-  // Always re-filter: Hygraph remote cache may still include past dates.
   const availability = filterUpcomingAvailability(pim.availability);
   const targetCurrency = localeToCurrency(locale);
 

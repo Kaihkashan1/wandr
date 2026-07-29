@@ -18,8 +18,8 @@ export async function GET(request: NextRequest) {
   return Response.json(data, {
     headers: {
       "X-PIM-Source": source,
-      // Helps confirm whether production is reading Airtable or falling back.
-      "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
+      // Avoid CDN caching so Airtable edits (new dates) appear immediately.
+      "Cache-Control": "no-store",
     },
   });
 }

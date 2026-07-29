@@ -73,7 +73,9 @@ export function filterUpcomingAvailability(
   slots: TourAvailability[]
 ): TourAvailability[] {
   const today = todayISODate();
-  return slots.filter((slot) => slot.date >= today);
+  return slots.filter(
+    (slot) => typeof slot.date === "string" && slot.date >= today
+  );
 }
 
 function getMockPimData(tourId: string): {

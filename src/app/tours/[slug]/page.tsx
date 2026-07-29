@@ -15,8 +15,8 @@ interface Props {
   searchParams: Promise<{ preview?: string; locale?: string }>;
 }
 
-// Re-fetch PIM pricing/availability periodically (not baked in at build time forever).
-export const revalidate = 60;
+// Keep tour pages fresh so Airtable departure edits show up quickly.
+export const revalidate = 0;
 
 export async function generateStaticParams() {
   const slugs = await getAllTourSlugs();

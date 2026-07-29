@@ -1,6 +1,6 @@
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
-export type Locale = "en" | "de" | "fr" | "es";
+export type Locale = "en" | "de" | "fr" | "es" | "ja";
 
 export interface Asset {
   id: string;

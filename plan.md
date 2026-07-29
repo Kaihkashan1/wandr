@@ -53,7 +53,7 @@ A Hygraph reference project demonstrating localization, live preview, click-to-e
 - All Hygraph queries pass `locales: [$locale, en]` with English fallback
 - UI strings in `src/lib/i18n.ts` (~400 keys × 4 locales)
 - Locale-aware date and money formatting (`src/lib/locale.ts`)
-- Locale → currency mapping: EN → USD, DE/FR/ES → EUR
+- Locale → currency mapping: EN → USD, DE/FR/ES → EUR, JA → JPY
 
 **Files:**
 
@@ -326,7 +326,7 @@ query {
 
 - Extend `GET_TOUR_BY_SLUG` in `src/lib/queries.ts` to request `pimData` remote field
 - Simplify `getTourBySlug()` — use Hygraph response instead of `enrichTourWithFederation()` for pricing/availability
-- Keep `enrichTourWithFederation()` for **currency conversion** (locale → USD/EUR) since that is app-level logic
+- Keep `enrichTourWithFederation()` for **currency conversion** (locale → USD/EUR/JPY) since that is app-level logic
 
 ### Step 5 — Exchange rates remote source (optional)
 
