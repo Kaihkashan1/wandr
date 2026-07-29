@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Link from "next/link";
-import { headers } from "next/headers";
+import { draftMode, headers } from "next/headers";
 import "./globals.css";
 import { Nav } from "@/components/ui/Nav";
+import { PreviewBanner } from "@/components/preview/PreviewBanner";
 import { PreviewWrapper } from "@/components/preview/PreviewWrapper";
 import { t } from "@/lib/i18n";
 import { resolveRequestLocale } from "@/lib/request-locale";
@@ -38,6 +39,7 @@ export default async function RootLayout({
 }) {
   const locale = await resolveRequestLocale();
   const pathname = (await headers()).get("x-pathname") ?? "";
+  const { isEnabled: isPreview } = await draftMode();
   // Destinations index is a single-viewport layout — hide the site footer there.
   const hideFooter = pathname === "/destinations";
 
@@ -46,6 +48,7 @@ export default async function RootLayout({
       <body className="bg-gray-50 text-gray-900 antialiased min-h-screen flex flex-col">
         <PreviewWrapper>
           <Nav locale={locale} />
+          {isPreview && <PreviewBanner />}
           <main className="flex-1 flex flex-col">{children}</main>
           {!hideFooter && (
             <footer className="bg-navy-900 text-white/60 mt-auto border-t border-white/5">
