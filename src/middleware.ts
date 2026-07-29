@@ -9,6 +9,9 @@ const HYGRAPH_ORIGINS = [
   "https://studio.hygraph.com",
 ];
 
+/** Next.js Draft Mode sets this cookie via /api/preview. */
+const DRAFT_MODE_COOKIE = "__prerender_bypass";
+
 function isHygraphOrigin(origin: string | null): boolean {
   if (!origin) return false;
   return (
@@ -41,31 +44,48 @@ function applyPreviewHeaders(
 
 export function middleware(request: NextRequest) {
   const origin = request.headers.get("Origin");
+  const { pathname } = request.nextUrl;
 
   if (request.method === "OPTIONS") {
     const response = new NextResponse(null, { status: 204 });
     if (origin && isHygraphOrigin(origin)) {
       response.headers.set("Access-Control-Allow-Origin", origin);
       response.headers.set("Access-Control-Allow-Credentials", "true");
-      response.headers.set(
-        "Access-Control-Allow-Methods",
-        "GET, POST, OPTIONS, HEAD"
-      );
-      response.headers.set(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
-      );
-      response.headers.set("Access-Control-Max-Age", "86400");
     }
+    response.headers.set(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, HEAD"
+    );
+    response.headers.set(
+      "Access-Control-Allow-Headers",
+      "Content-Type, Authorization, RSC, Next-Router-State-Tree, Next-Router-Prefetch"
+    );
+    response.headers.set("Access-Control-Max-Age", "86400");
     response.headers.set("Access-Control-Allow-Private-Network", "true");
     return response;
   }
 
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-pathname", request.nextUrl.pathname);
-
-  const isPreview =
+  // While Draft Mode is on, keep ?preview=1 on every page URL so click-to-edit
+  // attrs stay enabled even when links omit the query (cards, footer, etc.).
+  // Skip API routes so /api/preview/disable can clear the cookie cleanly.
+  const hasDraftMode = Boolean(request.cookies.get(DRAFT_MODE_COOKIE)?.value);
+  const hasPreviewParam =
     request.nextUrl.searchParams.get(PREVIEW_QUERY_PARAM) === "1";
+  if (
+    hasDraftMode &&
+    !hasPreviewParam &&
+    request.method === "GET" &&
+    !pathname.startsWith("/api/")
+  ) {
+    const url = request.nextUrl.clone();
+    url.searchParams.set(PREVIEW_QUERY_PARAM, "1");
+    return NextResponse.redirect(url);
+  }
+
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+
+  const isPreview = hasPreviewParam || hasDraftMode;
 
   if (isPreview) {
     requestHeaders.set("x-wandr-preview", "1");
