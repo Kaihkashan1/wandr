@@ -41,10 +41,12 @@ const UI = {
     byAuthor: "By {{name}}",
     destinationsPageLabel: "Explore the world",
     destinationsPageTitle: "Destinations",
-    destinationsPageDesc: "{{count}} destinations across {{regions}} regions",
+    destinationsPageDesc:
+      "Handpicked places worth the journey — culture, wilderness, and wonder",
     toursPageLabel: "Experiences",
     toursPageTitle: "Tours & experiences",
-    toursPageDesc: "{{count}} tours with live pricing and availability",
+    toursPageDesc:
+      "Immersive trips with live pricing and availability from our booking system",
     guidesPageLabel: "Inspiration & advice",
     guidesPageTitle: "Travel guides",
     guidesPageDesc: "Expert advice, local tips, and insider knowledge",
@@ -139,10 +141,12 @@ const UI = {
     byAuthor: "Von {{name}}",
     destinationsPageLabel: "Entdecke die Welt",
     destinationsPageTitle: "Reiseziele",
-    destinationsPageDesc: "{{count}} Reiseziele in {{regions}} Regionen",
+    destinationsPageDesc:
+      "Handverlesene Orte, die die Reise wert sind — Kultur, Wildnis und Staunen",
     toursPageLabel: "Erlebnisse",
     toursPageTitle: "Touren & Erlebnisse",
-    toursPageDesc: "{{count}} Touren mit Live-Preisen und Verfügbarkeit",
+    toursPageDesc:
+      "Immersive Reisen mit Live-Preisen und Verfügbarkeit aus unserem Buchungssystem",
     guidesPageLabel: "Inspiration & Tipps",
     guidesPageTitle: "Reiseführer",
     guidesPageDesc: "Expertenrat, lokale Tipps und Insiderwissen",
@@ -237,10 +241,12 @@ const UI = {
     byAuthor: "Par {{name}}",
     destinationsPageLabel: "Explorez le monde",
     destinationsPageTitle: "Destinations",
-    destinationsPageDesc: "{{count}} destinations dans {{regions}} régions",
+    destinationsPageDesc:
+      "Des lieux soigneusement choisis qui valent le voyage — culture, nature et émerveillement",
     toursPageLabel: "Expériences",
     toursPageTitle: "Circuits & expériences",
-    toursPageDesc: "{{count}} circuits avec tarifs et disponibilités en direct",
+    toursPageDesc:
+      "Voyages immersifs avec tarifs et disponibilités en direct depuis notre système de réservation",
     guidesPageLabel: "Inspiration & conseils",
     guidesPageTitle: "Guides de voyage",
     guidesPageDesc: "Conseils d'experts, astuces locales et connaissances d'initiés",
@@ -335,10 +341,12 @@ const UI = {
     byAuthor: "Por {{name}}",
     destinationsPageLabel: "Explora el mundo",
     destinationsPageTitle: "Destinos",
-    destinationsPageDesc: "{{count}} destinos en {{regions}} regiones",
+    destinationsPageDesc:
+      "Lugares seleccionados que valen el viaje — cultura, naturaleza y asombro",
     toursPageLabel: "Experiencias",
     toursPageTitle: "Tours y experiencias",
-    toursPageDesc: "{{count}} tours con precios y disponibilidad en vivo",
+    toursPageDesc:
+      "Viajes inmersivos con precios y disponibilidad en vivo desde nuestro sistema de reservas",
     guidesPageLabel: "Inspiración y consejos",
     guidesPageTitle: "Guías de viaje",
     guidesPageDesc: "Consejos de expertos, tips locales y conocimiento privilegiado",
@@ -433,10 +441,12 @@ const UI = {
     byAuthor: "{{name}} 著",
     destinationsPageLabel: "世界を探索する",
     destinationsPageTitle: "目的地",
-    destinationsPageDesc: "{{regions}} 地域・{{count}} 件の目的地",
+    destinationsPageDesc:
+      "旅する価値のある厳選の地 — 文化、大自然、そして驚き",
     toursPageLabel: "体験",
     toursPageTitle: "ツアー＆体験",
-    toursPageDesc: "ライブ料金と空席状況付きのツアー {{count}} 件",
+    toursPageDesc:
+      "予約システムから届くライブ料金と空席状況付きの没入型ツアー",
     guidesPageLabel: "インスピレーション＆アドバイス",
     guidesPageTitle: "旅行ガイド",
     guidesPageDesc: "専門家のアドバイス、地元のヒント、インサイダー情報",

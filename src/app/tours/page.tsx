@@ -34,7 +34,7 @@ export default async function ToursPage() {
       <PageHeader
         label={t(locale, "toursPageLabel")}
         title={t(locale, "toursPageTitle")}
-        description={t(locale, "toursPageDesc", { count: tours.length })}
+        description={t(locale, "toursPageDesc")}
       />
 
       <div className="max-w-6xl mx-auto px-6 py-12">

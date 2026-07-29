@@ -61,10 +61,7 @@ export default async function DestinationsPage({ searchParams }: Props) {
       <PageHeader
         label={t(locale, "destinationsPageLabel")}
         title={pageTitle}
-        description={t(locale, "destinationsPageDesc", {
-          count: destinations.length,
-          regions: Object.keys(byRegion).length,
-        })}
+        description={t(locale, "destinationsPageDesc")}
       />
 
       <div className="max-w-6xl mx-auto px-6 py-8">
