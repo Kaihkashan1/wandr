@@ -5,7 +5,7 @@ const STAGE_CONFIG: Record<
   ContentStage,
   { label: string; className: string }
 > = {
-  DRAFT: { label: "Draft", className: "stage-badge--draft" },
+  DRAFT: { label: "Preview", className: "stage-badge--draft" },
   IN_REVIEW: { label: "In review", className: "stage-badge--in-review" },
   PUBLISHED: { label: "Published", className: "stage-badge--published" },
 };
