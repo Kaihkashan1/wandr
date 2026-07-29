@@ -139,6 +139,22 @@ export const GET_TOUR_BY_SLUG = gql`
           ...AssetFields
         }
       }
+      pimData {
+        pricing {
+          tourId
+          basePrice
+          currency
+          discountedPrice
+          pricePerPerson
+        }
+        availability {
+          tourId
+          date
+          spotsTotal
+          spotsRemaining
+          status
+        }
+      }
     }
   }
   ${ASSET_FRAGMENT}
@@ -220,4 +236,3 @@ export const GET_ALL_GUIDE_SLUGS = gql`
     }
   }
 `;
-

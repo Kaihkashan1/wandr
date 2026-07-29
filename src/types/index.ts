@@ -73,6 +73,11 @@ export interface Tour {
   // Federated — from PIM remote source
   pricing?: TourPricing;
   availability?: TourAvailability[];
+  /** Raw PIM payload from Hygraph remote field (before FX enrichment) */
+  pimData?: {
+    pricing: TourPricing;
+    availability: TourAvailability[];
+  };
 }
 
 // ─── Travel Guide ─────────────────────────────────────────────────────────────

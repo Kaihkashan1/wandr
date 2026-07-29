@@ -34,7 +34,8 @@ export async function enrichTourWithFederation(
   tour: Tour,
   locale: Locale
 ): Promise<Tour> {
-  const { pricing, availability } = await getPimData(tour.slug);
+  const pim = tour.pimData ?? (await getPimData(tour.slug));
+  const { pricing, availability } = pim;
   const targetCurrency = localeToCurrency(locale);
 
   try {
